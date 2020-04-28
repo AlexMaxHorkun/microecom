@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phptest2-deployment
+  labels:
+    app: phptest2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: phptest2
+  template:
+    metadata:
+      labels:
+        app: phptest2
+    spec:
+      containers:
+        - name: php-test-app2-container-kube
+          image: php-test-app2:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+            - name: ssh
+              containerPort: 22

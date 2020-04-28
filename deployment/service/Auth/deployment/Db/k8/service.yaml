@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-db-service
+  labels:
+    run: auth-db-service
+spec:
+  type: NodePort
+  ports:
+    - port: 5432
+      protocol: TCP
+      name: pgsql
+  selector:
+    app: auth-db

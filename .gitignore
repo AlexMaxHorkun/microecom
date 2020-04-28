@@ -1,0 +1,4 @@
+.idea
+
+# Project exclude paths
+/code/service/Auth/target/

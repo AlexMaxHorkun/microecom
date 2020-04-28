@@ -1,0 +1,1 @@
+docker container rm -f php-test-app-container2
