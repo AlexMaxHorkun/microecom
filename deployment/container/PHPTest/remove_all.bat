@@ -1,1 +1,0 @@
-docker image rm -f php-test-app && docker system prune -a -f --volumes

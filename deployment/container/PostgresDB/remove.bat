@@ -1,1 +1,0 @@
-docker image rm -f postgres-db
