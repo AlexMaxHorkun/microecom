@@ -12,13 +12,13 @@ import java.util.Optional;
  * Users manager.
  */
 public interface UserManager {
-    public User create(@NotNull NewUserWithCredentials user);
+    User create(@NotNull NewUserWithCredentials user);
 
-    public Optional<User> findById(@NotNull String id);
+    Optional<User> findById(@NotNull String id);
 
-    public User update(@NotNull UserWithCredentialsUpdate update);
+    User update(@NotNull UserWithCredentialsUpdate update);
 
-    public void delete(@NotNull String id) throws IllegalArgumentException;
+    void delete(@NotNull String id) throws IllegalArgumentException;
 
-    public Optional<UserWithCredentials> findByLogin(String login);
+    Optional<UserWithCredentials> findByLogin(String login);
 }

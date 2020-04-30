@@ -6,7 +6,7 @@ import java.util.Optional;
 public class UserUpdate implements UserWithCredentialsUpdate {
     private String userId;
 
-    private String password;
+    private final String password;
 
     public UserUpdate(String userId, String password) {
         this.userId = userId;

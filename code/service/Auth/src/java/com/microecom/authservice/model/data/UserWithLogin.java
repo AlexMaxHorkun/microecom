@@ -7,5 +7,5 @@ import javax.validation.constraints.NotNull;
  */
 public interface UserWithLogin extends NewUser {
     @NotNull
-    public String getLogin();
+    String getLogin();
 }

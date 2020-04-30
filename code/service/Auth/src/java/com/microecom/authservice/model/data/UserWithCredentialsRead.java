@@ -7,7 +7,7 @@ import java.time.Instant;
  * User with credentials info.
  */
 public class UserWithCredentialsRead extends UserData implements User, UserWithLogin {
-    private String login;
+    private final String login;
 
     public UserWithCredentialsRead(String id, Instant timestamp, String login) {
         super(id, timestamp);

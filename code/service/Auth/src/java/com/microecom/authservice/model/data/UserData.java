@@ -9,9 +9,9 @@ import java.time.ZonedDateTime;
  * Public user data.
  */
 public class UserData implements User {
-    private String id;
+    private final String id;
 
-    private Instant timestamp;
+    private final Instant timestamp;
 
     public UserData(String id, Instant timestamp) {
         this.id = id;

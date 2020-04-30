@@ -25,11 +25,6 @@ public class UserRow {
         id = UUID.randomUUID();
     }
 
-    public UserRow(@NotNull UUID id, @NotNull Instant created) {
-        this.created = created;
-        this.id = id;
-    }
-
     public UUID getId() {
         return id;
     }

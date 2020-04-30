@@ -11,5 +11,5 @@ public interface NewUser {
     /**
      * Created time in UTC.
      */
-    public @NotNull ZonedDateTime getCreated();
+    @NotNull ZonedDateTime getCreated();
 }

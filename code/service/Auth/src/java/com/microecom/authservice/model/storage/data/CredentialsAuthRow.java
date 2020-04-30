@@ -2,7 +2,6 @@ package com.microecom.authservice.model.storage.data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @Entity
 @Table(name="credentials_auth")

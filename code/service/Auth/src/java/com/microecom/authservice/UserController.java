@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 @RequestMapping("/rest/V1/user")
 @Validated
 public class UserController {
-    private UserManager users;
+    private final UserManager users;
 
     public UserController(@Autowired UserManager users) {
         this.users = users;

@@ -9,11 +9,11 @@ import java.time.ZonedDateTime;
  * New User to be created.
  */
 public class NewUserData implements NewUserWithCredentials {
-    private ZonedDateTime created;
+    private final ZonedDateTime created;
 
-    private String login;
+    private final String login;
 
-    private String password;
+    private final String password;
 
     public NewUserData(
             @NotNull @Size(min=5, max=255) String login,

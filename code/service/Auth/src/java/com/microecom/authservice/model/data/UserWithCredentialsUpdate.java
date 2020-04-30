@@ -9,7 +9,7 @@ public interface UserWithCredentialsUpdate {
     /**
      * Will not be updated if empty.
      */
-    public Optional<String> getNewPassword();
+    Optional<String> getNewPassword();
 
-    public String getUserId();
+    String getUserId();
 }

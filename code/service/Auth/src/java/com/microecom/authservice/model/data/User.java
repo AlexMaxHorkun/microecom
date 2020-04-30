@@ -12,5 +12,5 @@ public interface User extends NewUser {
      * Is just String so that ID impl not enforced.
      */
     @NotNull
-    public String getId();
+    String getId();
 }

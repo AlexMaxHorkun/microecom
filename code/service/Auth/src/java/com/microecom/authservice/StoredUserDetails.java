@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class StoredUserDetails implements org.springframework.security.core.userdetails.UserDetails {
-    private UserWithCredentials user;
+    private final UserWithCredentials user;
 
     public StoredUserDetails(UserWithCredentials user) {
         this.user = user;

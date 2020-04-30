@@ -4,7 +4,7 @@ import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
 public class UserWithCredentialsData extends UserWithCredentialsRead implements UserWithCredentials {
-    private String password;
+    private final String password;
 
     public UserWithCredentialsData(
             @NotNull String id,
