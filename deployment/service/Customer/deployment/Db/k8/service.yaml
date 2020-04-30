@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-db-service
+  labels:
+    run: customer-db-service
+spec:
+  type: NodePort
+  ports:
+    - port: 5432
+      protocol: TCP
+      name: pgsql
+  selector:
+    app: customer-db

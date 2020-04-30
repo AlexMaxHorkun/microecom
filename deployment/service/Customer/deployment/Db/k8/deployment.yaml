@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-db-deployment
+  labels:
+    app: customer-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer-db
+  template:
+    metadata:
+      labels:
+        app: customer-db
+    spec:
+      containers:
+        - name: customer-db-container-kube
+          image: customer-db:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: pgsql
+              containerPort: 5432

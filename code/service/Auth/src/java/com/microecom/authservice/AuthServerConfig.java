@@ -27,7 +27,7 @@ import java.util.Collections;
 @EnableAuthorizationServer
 @Configuration
 public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
-    private W@Autowired PasswordEncryptor passwordEncryptor;
+    private @Autowired PasswordEncryptor passwordEncryptor;
 
     private final AuthenticationConfiguration auth;
 
