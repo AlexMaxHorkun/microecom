@@ -18,4 +18,6 @@ public interface UserRepository {
     public void delete(@NotNull String id) throws IllegalArgumentException;
 
     public Optional<User> fetchSensitiveById(@NotNull String id);
+
+    public Optional<UserWithCredentials> findByLogin(String login);
 }

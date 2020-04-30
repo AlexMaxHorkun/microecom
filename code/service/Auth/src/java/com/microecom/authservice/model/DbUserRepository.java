@@ -110,4 +110,15 @@ public class DbUserRepository implements UserRepository {
 
         return returning;
     }
+
+    @Override
+    public Optional<UserWithCredentials> findByLogin(String login) {
+        Optional<UserWithCredentials> result = Optional.empty();
+        var found = credentialsRepo.findByLogin(login);
+        if (found.isPresent()) {
+            result = Optional.of((UserWithCredentials)createUserSensitiveReadDTO(found.get().getUser()));
+        }
+
+        return result;
+    }
 }

@@ -25,8 +25,8 @@ public class CredentialsAuthRow {
         this.password = password;
     }
 
-    public @NotNull UUID getUserId() {
-        return user.getId();
+    public @NotNull UserRow getUser() {
+        return user;
     }
 
     public @NotNull String getLogin() {

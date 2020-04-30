@@ -2,3 +2,4 @@
 
 # Project exclude paths
 /code/service/Auth/target/
+/deployment/service/Auth/deployment/App/image/resource/*.jar

@@ -2,7 +2,6 @@ package com.microecom.authservice.model;
 
 import com.microecom.authservice.model.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
@@ -62,5 +61,10 @@ public class DefaultUserManager implements UserManager {
     @Override
     public void delete(@NotNull String id) throws IllegalArgumentException {
         userRepo.delete(id);
+    }
+
+    @Override
+    public Optional<UserWithCredentials> findByLogin(String login) {
+        return userRepo.findByLogin(login);
     }
 }
