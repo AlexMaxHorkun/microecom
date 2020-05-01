@@ -1,1 +1,1 @@
-docker build -t auth-db .
+docker build -t customer-db .

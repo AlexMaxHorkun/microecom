@@ -1,1 +1,1 @@
-docker image rm -f auth-db
+docker image rm -f customer-db
