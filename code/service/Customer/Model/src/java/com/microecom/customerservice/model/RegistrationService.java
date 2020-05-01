@@ -9,8 +9,6 @@ import com.microecom.customerservice.model.storage.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
-
 @Service
 public class RegistrationService implements Registration {
     private final AuthClient authClient;
@@ -23,7 +21,7 @@ public class RegistrationService implements Registration {
     }
 
     @Override
-    public ExistingCustomer register(@Valid SigningUp newCustomer) throws IllegalArgumentException {
+    public ExistingCustomer register(SigningUp newCustomer) throws IllegalArgumentException {
         var user = authClient.create(new NewUser(newCustomer.getLogin(), newCustomer.getPassword()));
 
         return repo.save(

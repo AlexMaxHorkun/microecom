@@ -2,4 +2,7 @@
 
 # Project exclude paths
 /code/service/Auth/target/
+/code/service/Customer/Model/target/
+/code/service/Customer/Http/target/
 /deployment/service/Auth/deployment/App/image/resource/*.jar
+/deployment/service/Customer/deployment/Http/image/resource/*.jar

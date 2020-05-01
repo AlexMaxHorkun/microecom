@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Component
 public class RestAuthClient implements AuthClient {
     private final String authRestUri;
@@ -37,5 +39,24 @@ public class RestAuthClient implements AuthClient {
         }
 
         return new User(created.getBody().getLogin().get(), created.getBody().getId(), created.getBody().getCreated());
+    }
+
+    @Override
+    public Optional<User> get(String id) {
+        var response = rest.getForEntity(authRestUri + "/V1/user/" + id, UserObject.class);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return Optional.empty();
+        }
+
+        if (response.getBody().getLogin().isPresent()) {
+            return Optional.of(
+                    new User(
+                            response.getBody().getLogin().get(),
+                            response.getBody().getId(),
+                            response.getBody().getCreated()
+                    )
+            );
+        }
+        return Optional.of(new User(response.getBody().getId(), response.getBody().getCreated()));
     }
 }

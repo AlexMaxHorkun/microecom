@@ -1,6 +1,7 @@
 package com.microecom.customerservice.model.client.data;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public class User {
     private final String login;
@@ -15,8 +16,18 @@ public class User {
         this.created = created;
     }
 
-    public String getLogin() {
-        return login;
+    public User(String id, Instant created) {
+        this.id = id;
+        this.created = created;
+        login = null;
+    }
+
+    public Optional<String> getLogin() {
+        if (login == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(login);
     }
 
     public String getId() {
