@@ -38,7 +38,7 @@ public class RestAuthClient implements AuthClient {
             throw new IllegalArgumentException("Failed to create a user");
         }
 
-        return new User(created.getBody().getLogin().get(), created.getBody().getId(), created.getBody().getCreated());
+        return new User(user.getLogin(), created.getBody().getId(), created.getBody().getCreated());
     }
 
     @Override

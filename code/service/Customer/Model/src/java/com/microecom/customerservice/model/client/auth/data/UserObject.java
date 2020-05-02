@@ -29,6 +29,10 @@ public class UserObject {
     }
 
     public Optional<String> getLogin() {
+        if (login == null ) {
+            return Optional.empty();
+        }
+
         return Optional.of(login);
     }
 
