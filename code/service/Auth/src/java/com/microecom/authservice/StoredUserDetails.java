@@ -51,4 +51,8 @@ public class StoredUserDetails implements org.springframework.security.core.user
     public boolean isEnabled() {
         return true;
     }
+
+    public String getUserId() {
+        return user.getId();
+    }
 }

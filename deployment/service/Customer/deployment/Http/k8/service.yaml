@@ -14,6 +14,6 @@ spec:
     - port: 5006
       protocol: TCP
       name: debug
-      targetPort: 5005
+      targetPort: 5006
   selector:
     app: customer-http-service

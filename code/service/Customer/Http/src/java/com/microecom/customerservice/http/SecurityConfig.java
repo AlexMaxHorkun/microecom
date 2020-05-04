@@ -1,6 +1,10 @@
 package com.microecom.customerservice.http;
 
-import org.springframework.context.annotation.Configuration;
+import com.microecom.customerservice.http.model.PrincipalManager;
+import com.microecom.customerservice.http.model.principal.CompositePrincipalManager;
+import com.microecom.customerservice.http.model.principal.JwtAwarePrincipalManager;
+import com.microecom.customerservice.model.CustomerManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -8,12 +12,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import java.util.HashSet;
+
 @EnableWebSecurity
-@Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.oauth2ResourceServer().jwt();
         http
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -23,11 +27,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().disable()
                 .authorizeRequests().antMatchers(HttpMethod.POST, "/rest/V1/customer").permitAll().and()
                 .authorizeRequests().antMatchers(HttpMethod.GET, "/rest/V1/customer").authenticated();
+        http.oauth2ResourceServer().jwt();
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
         super.configure(web);
         web.debug(true);
+    }
+
+    @Bean
+    public PrincipalManager principalManager(JwtAwarePrincipalManager jwtManager) {
+        var set = new HashSet<PrincipalManager>();
+        set.add(jwtManager);
+        return new CompositePrincipalManager(set);
     }
 }

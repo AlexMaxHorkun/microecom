@@ -15,6 +15,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -22,7 +24,9 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
 
 import java.security.KeyPair;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @EnableAuthorizationServer
 @Configuration
@@ -50,8 +54,14 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        var chain = new TokenEnhancerChain();
+        chain.setTokenEnhancers(
+                List.of(new CustomTokenEnchancer(), (JwtCustomizableTokenConverter) accessTokenConverter())
+        );
+
         endpoints.authenticationManager(auth.getAuthenticationManager())
                 .accessTokenConverter(accessTokenConverter())
+                .tokenEnhancer(chain)
                 .tokenStore(tokenStore());
     }
 

@@ -46,6 +46,6 @@ public class JpaCustomerRepository implements CustomerRepository {
 
     @Override
     public Optional<ExistingCustomer> findByUserId(String id) {
-        return repo.findById(UUID.fromString(id)).map(this::convertToExisting);
+        return repo.findByUserId(id).map(this::convertToExisting);
     }
 }
