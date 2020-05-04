@@ -6,6 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
 /**
  * Customer registering via customers service.
@@ -52,5 +53,15 @@ public class NewCustomer implements SigningUp {
     @Override
     public @NotNull @NotBlank @Size(min = 5, max = 255) @Email String getEmail() {
         return email;
+    }
+
+    @Override
+    public Optional<String> getDefaultShippingAddress() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getDefaultBillingAddress() {
+        return Optional.empty();
     }
 }

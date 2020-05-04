@@ -2,10 +2,12 @@ package com.microecom.customerservice.http.controller;
 
 import com.microecom.customerservice.http.controller.data.FullCustomerRead;
 import com.microecom.customerservice.http.controller.data.NewCustomer;
+import com.microecom.customerservice.http.controller.data.SelfUpdate;
 import com.microecom.customerservice.http.model.PrincipalManager;
 import com.microecom.customerservice.model.CustomerManager;
 import com.microecom.customerservice.model.Registration;
 import com.microecom.customerservice.model.client.AuthClient;
+import com.microecom.customerservice.model.data.ExistingCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,39 +43,61 @@ public class Customers {
     public ResponseEntity<FullCustomerRead> register(@RequestBody @Valid NewCustomer registering) {
         var created = registrationService.register(registering);
 
-        return new ResponseEntity<>(
-                new FullCustomerRead(
-                        created.getEmail(),
-                        created.getFirstName(),
-                        created.getId(),
-                        registering.getLogin(),
-                        created.getLastName()
-                ),
-                HttpStatus.CREATED
-        );
+        return new ResponseEntity<>(fetchFullRead(created, registering.getLogin()), HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping(path = "/me")
     public ResponseEntity<FullCustomerRead> me(Principal principal) {
         var customer = principals.extractCustomer(principal).get();
-        var userInfo = authClient.get(customer.getUserId()).get();
+
+        return new ResponseEntity<>(fetchFullRead(customer), HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "/me")
+    public ResponseEntity<FullCustomerRead> updateMe(@RequestBody @Valid SelfUpdate update, Principal principal) {
+        var customer = principals.extractCustomer(principal);
+        update.setId(customer.get().getId());
+
+        return new ResponseEntity<>(fetchFullRead(customers.update(update)), HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/me")
+    public ResponseEntity<Object> delete(Principal principal) {
+        customers.delete(principals.extractCustomer(principal).get().getId());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    private FullCustomerRead fetchFullRead(ExistingCustomer customerRecord) {
+        var userInfo = authClient.get(customerRecord.getUserId()).get();
         FullCustomerRead read;
         if (userInfo.getLogin().isPresent()) {
             read = new FullCustomerRead(
-                    customer.getEmail(),
-                    customer.getFirstName(),
-                    customer.getId(),
-                    customer.getLastName(),
+                    customerRecord.getEmail(),
+                    customerRecord.getFirstName(),
+                    customerRecord.getId(),
+                    customerRecord.getLastName(),
                     userInfo.getLogin().get()
             );
         } else {
             read = new FullCustomerRead(
-                    customer.getEmail(),
-                    customer.getFirstName(),
-                    customer.getId(),
-                    customer.getLastName()
+                    customerRecord.getEmail(),
+                    customerRecord.getFirstName(),
+                    customerRecord.getId(),
+                    customerRecord.getLastName()
             );
         }
-        return new ResponseEntity<>(read, HttpStatus.OK);
+
+        return read;
+    }
+
+    private FullCustomerRead fetchFullRead(ExistingCustomer customerRecord, String login) {
+        return new FullCustomerRead(
+                customerRecord.getEmail(),
+                customerRecord.getFirstName(),
+                customerRecord.getId(),
+                customerRecord.getLastName(),
+                login
+        );
     }
 }

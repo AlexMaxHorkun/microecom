@@ -2,6 +2,8 @@ package com.microecom.customerservice.model.registration.data;
 
 import com.microecom.customerservice.model.data.Customer;
 
+import java.util.Optional;
+
 public class NewCustomer implements Customer {
     private final String firstName;
 
@@ -36,5 +38,15 @@ public class NewCustomer implements Customer {
     @Override
     public String getUserId() {
         return userId;
+    }
+
+    @Override
+    public Optional<String> getDefaultShippingAddress() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getDefaultBillingAddress() {
+        return Optional.empty();
     }
 }

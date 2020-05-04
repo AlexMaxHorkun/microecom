@@ -12,4 +12,6 @@ public interface AuthClient {
     User create(NewUser user) throws IllegalArgumentException;
 
     Optional<User> get(String id);
+
+    void delete(String id) throws IllegalArgumentException;
 }

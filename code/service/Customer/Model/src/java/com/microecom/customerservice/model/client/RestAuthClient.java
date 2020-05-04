@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
@@ -58,5 +60,15 @@ public class RestAuthClient implements AuthClient {
             );
         }
         return Optional.of(new User(response.getBody().getId(), response.getBody().getCreated()));
+    }
+
+    @Override
+    public void delete(String id) throws IllegalArgumentException {
+        try {
+            rest.delete(authRestUri + "/V1/user/" + id);
+        } catch (HttpClientErrorException.NotFound exception) {
+            throw new IllegalArgumentException("User with given ID not found");
+        }
+
     }
 }
