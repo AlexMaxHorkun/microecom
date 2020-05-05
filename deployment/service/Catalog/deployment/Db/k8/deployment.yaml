@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-db-deployment
+  labels:
+    app: catalog-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-db
+  template:
+    metadata:
+      labels:
+        app: catalog-db
+    spec:
+      containers:
+        - name: catalog-db-container-kube
+          image: catalog-db:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: pgsql
+              containerPort: 5432

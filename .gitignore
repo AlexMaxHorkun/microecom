@@ -1,4 +1,5 @@
 .idea
+*.iml
 
 # Project exclude paths
 /code/service/Auth/target/

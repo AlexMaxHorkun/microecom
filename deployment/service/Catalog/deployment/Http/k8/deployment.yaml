@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-http-service-deployment
+  labels:
+    app: catalog-http-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-http-service
+  template:
+    metadata:
+      labels:
+        app: catalog-http-service
+    spec:
+      containers:
+        - name: catalog-http-service-container-kube
+          image: catalog-http-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: debug
+              containerPort: 5007
