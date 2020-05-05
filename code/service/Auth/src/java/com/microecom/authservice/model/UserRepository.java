@@ -9,15 +9,15 @@ import java.util.Optional;
  * Repository to store users.
  */
 public interface UserRepository {
-    public @NotNull User create(@NotNull NewUserWithCredentials user);
+    @NotNull User create(@NotNull NewUserWithCredentials user);
 
-    public void update(@NotNull UserWithCredentials user);
+    void update(@NotNull UserWithCredentials user);
 
-    public Optional<User> fetchById(@NotNull String id);
+    Optional<User> fetchById(@NotNull String id);
 
-    public void delete(@NotNull String id) throws IllegalArgumentException;
+    void delete(@NotNull String id) throws IllegalArgumentException;
 
-    public Optional<User> fetchSensitiveById(@NotNull String id);
+    Optional<User> fetchSensitiveById(@NotNull String id);
 
-    public Optional<UserWithCredentials> findByLogin(String login);
+    Optional<UserWithCredentials> findByLogin(String login);
 }

@@ -3,7 +3,6 @@ package com.microecom.customerservice.http;
 import com.microecom.customerservice.http.model.PrincipalManager;
 import com.microecom.customerservice.http.model.principal.CompositePrincipalManager;
 import com.microecom.customerservice.http.model.principal.JwtAwarePrincipalManager;
-import com.microecom.customerservice.model.CustomerManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

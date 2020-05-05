@@ -56,8 +56,8 @@ public class Addresses {
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Object> delete(@PathVariable @NotNull String id, Principal principal) {
         var addressFound = addresses.findById(id);
-        var customerFound = principals.extractCustomer(principal);
-        if (addressFound.isEmpty() || !addressFound.get().getCustomerId().equals(customerFound.get().getId())) {
+        var customer = principals.extractCustomer(principal).get();
+        if (addressFound.isEmpty() || !addressFound.get().getCustomerId().equals(customer.getId())) {
             return ResponseEntity.notFound().build();
         }
 

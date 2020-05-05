@@ -19,21 +19,13 @@ public class AddressRow {
 
     private int zipCode;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "customer_id")
     private CustomerRow customer;
 
     public AddressRow(CustomerRow customer, String addressLine, String addressLine2, int zipCode) {
         this.addressLine = addressLine;
         this.addressLine2 = addressLine2;
-        this.zipCode = zipCode;
-        id = UUID.randomUUID();
-        this.customer = customer;
-    }
-
-    public AddressRow(CustomerRow customer, String addressLine, int zipCode) {
-        this.addressLine = addressLine;
-        this.addressLine2 = null;
         this.zipCode = zipCode;
         id = UUID.randomUUID();
         this.customer = customer;

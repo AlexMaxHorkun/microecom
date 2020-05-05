@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserDetailsRetriever implements UserDetailsService {
-    UserManager userManager;
+    private final UserManager userManager;
 
     public UserDetailsRetriever(@Autowired UserManager userManager) {
         this.userManager = userManager;

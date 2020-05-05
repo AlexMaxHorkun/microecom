@@ -1,6 +1,5 @@
 package com.microecom.customerservice.http.controller.data;
 
-import javax.validation.constraints.Size;
 import java.util.Optional;
 
 /**
