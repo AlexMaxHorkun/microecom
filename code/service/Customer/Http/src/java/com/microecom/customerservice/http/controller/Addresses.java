@@ -30,7 +30,7 @@ public class Addresses {
     }
 
     @PostMapping
-    public ResponseEntity<AddressRead> create(@RequestBody NewAddress address, Principal principal) {
+    public ResponseEntity<AddressRead> create(@RequestBody @Valid NewAddress address, Principal principal) {
         var customerFound = principals.extractCustomer(principal);
         address.setCustomerId(customerFound.get().getId());
 

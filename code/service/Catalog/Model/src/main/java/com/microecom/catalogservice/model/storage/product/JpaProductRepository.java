@@ -35,12 +35,14 @@ public class JpaProductRepository implements ProductRepository {
         }
 
         return convertToExisting(
-                new ProductRow(
-                        newProduct.getSku(),
-                        newProduct.getTitle(),
-                        newProduct.getDescription(),
-                        newProduct.getPrice(),
-                        categoryFound.get()
+                repo.save(
+                        new ProductRow(
+                                newProduct.getSku(),
+                                newProduct.getTitle(),
+                                newProduct.getDescription(),
+                                newProduct.getPrice(),
+                                categoryFound.get()
+                        )
                 )
         );
     }
