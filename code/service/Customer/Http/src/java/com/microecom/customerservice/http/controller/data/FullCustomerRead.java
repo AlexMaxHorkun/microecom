@@ -1,5 +1,6 @@
 package com.microecom.customerservice.http.controller.data;
 
+import javax.validation.constraints.Size;
 import java.util.Optional;
 
 /**
@@ -10,16 +11,16 @@ public class FullCustomerRead extends CustomerRead {
 
     private final String lastName;
 
-    public FullCustomerRead(String email, String firstName, String id, String lastName) {
-        super(email, firstName, id);
-        login = null;
-        this.lastName = lastName;
-    }
+    private final String defaultShippingId;
 
-    public FullCustomerRead(String email, String firstName, String id, String lastName, String login) {
+    private final String defaultBillingId;
+
+    public FullCustomerRead(String email, String firstName, String id, String lastName, String login, String shippingId, String billingId) {
         super(email, firstName, id);
         this.login = login;
         this.lastName = lastName;
+        this.defaultShippingId = shippingId;
+        this.defaultBillingId = billingId;
     }
 
     public Optional<String> getLogin() {
@@ -32,5 +33,13 @@ public class FullCustomerRead extends CustomerRead {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public Optional<String> getDefaultShippingAddress() {
+        return Optional.ofNullable(defaultShippingId);
+    }
+
+    public Optional<String> getDefaultBillingAddress() {
+        return Optional.ofNullable(defaultBillingId);
     }
 }

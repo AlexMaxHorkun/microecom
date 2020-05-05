@@ -3,7 +3,6 @@ package com.microecom.customerservice.http.controller.data;
 import com.microecom.customerservice.model.data.CustomerUpdate;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Optional;
 
@@ -23,12 +22,12 @@ public class SelfUpdate implements CustomerUpdate {
 
     private final String billingId;
 
-    public SelfUpdate(String email, String firstName, String lastName, String shippingId, String billingId) {
+    public SelfUpdate(String email, String firstName, String lastName, String defaultShippingAddress, String defaultBillingAddress) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.shippingId = shippingId;
-        this.billingId = billingId;
+        this.shippingId = defaultShippingAddress;
+        this.billingId = defaultBillingAddress;
     }
 
     public void setId(String id) {
@@ -41,27 +40,27 @@ public class SelfUpdate implements CustomerUpdate {
     }
 
     @Override
-    public @NotBlank @Size(min = 5, max = 255) @Email Optional<String> getEmail() {
+    public Optional<@Size(min = 5, max = 255) @Email String> getEmail() {
         return Optional.ofNullable(email);
     }
 
     @Override
-    public @NotBlank @Size(min = 5, max = 255) Optional<String> getFirstName() {
+    public Optional<@Size(min = 5, max = 255) String> getFirstName() {
         return Optional.ofNullable(firstName);
     }
 
     @Override
-    public @NotBlank @Size(min = 5, max = 255) Optional<String> getLastName() {
+    public Optional<@Size(min = 5, max = 255) String> getLastName() {
         return Optional.ofNullable(lastName);
     }
 
     @Override
-    public @NotBlank Optional<String> getDefaultShippingAddress() {
+    public Optional<@Size(min = 5, max = 255) String> getDefaultShippingAddress() {
         return Optional.ofNullable(shippingId);
     }
 
     @Override
-    public @NotBlank Optional<String> getDefaultBillingAddress() {
+    public Optional<@Size(min = 5, max = 255) String> getDefaultBillingAddress() {
         return Optional.ofNullable(billingId);
     }
 }

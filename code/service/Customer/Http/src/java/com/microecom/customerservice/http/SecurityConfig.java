@@ -26,7 +26,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .logout().disable()
                 .authorizeRequests().antMatchers(HttpMethod.POST, "/rest/V1/customer").permitAll().and()
-                .authorizeRequests().antMatchers(HttpMethod.GET, "/rest/V1/customer").authenticated();
+                .authorizeRequests().antMatchers(HttpMethod.GET, "/rest/V1/customer/**").authenticated().and()
+                .authorizeRequests().antMatchers(HttpMethod.PATCH, "/rest/V1/customer/**").authenticated().and()
+                .authorizeRequests().antMatchers(HttpMethod.DELETE, "/rest/V1/customer/**").authenticated().and()
+                .authorizeRequests().antMatchers(HttpMethod.POST, "/rest/V1/address").authenticated().and()
+                .authorizeRequests().antMatchers(HttpMethod.PATCH, "/rest/V1/address/**").authenticated().and()
+                .authorizeRequests().antMatchers(HttpMethod.DELETE, "/rest/V1/address/**").authenticated().and()
+                .authorizeRequests().antMatchers(HttpMethod.GET, "/rest/V1/address").authenticated();
         http.oauth2ResourceServer().jwt();
     }
 

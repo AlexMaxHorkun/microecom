@@ -70,34 +70,32 @@ public class Customers {
 
     private FullCustomerRead fetchFullRead(ExistingCustomer customerRecord) {
         var userInfo = authClient.get(customerRecord.getUserId()).get();
-        FullCustomerRead read;
+        String login = null;
         if (userInfo.getLogin().isPresent()) {
-            read = new FullCustomerRead(
-                    customerRecord.getEmail(),
-                    customerRecord.getFirstName(),
-                    customerRecord.getId(),
-                    customerRecord.getLastName(),
-                    userInfo.getLogin().get()
-            );
-        } else {
-            read = new FullCustomerRead(
-                    customerRecord.getEmail(),
-                    customerRecord.getFirstName(),
-                    customerRecord.getId(),
-                    customerRecord.getLastName()
-            );
+            login = userInfo.getLogin().get();
         }
 
-        return read;
+        return fetchFullRead(customerRecord, login);
     }
 
     private FullCustomerRead fetchFullRead(ExistingCustomer customerRecord, String login) {
+        String shipId = null;
+        if (customerRecord.getDefaultShippingAddress().isPresent()) {
+            shipId = customerRecord.getDefaultShippingAddress().get();
+        }
+        String billId = null;
+        if (customerRecord.getDefaultBillingAddress().isPresent()) {
+            billId = customerRecord.getDefaultBillingAddress().get();
+        }
+
         return new FullCustomerRead(
                 customerRecord.getEmail(),
                 customerRecord.getFirstName(),
                 customerRecord.getId(),
                 customerRecord.getLastName(),
-                login
+                login,
+                shipId,
+                billId
         );
     }
 }

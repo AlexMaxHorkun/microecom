@@ -22,6 +22,15 @@ public class JpaCustomerRepository implements CustomerRepository {
     }
 
     private ExistingCustomer convertToExisting(CustomerRow row) {
+        String shipId = null;
+        if (row.getDefaultShippingId() != null) {
+            shipId = row.getDefaultShippingId().toString();
+        }
+        String billId = null;
+        if (row.getDefaultBillingId() != null) {
+            billId = row.getDefaultBillingId().toString();
+        }
+
         return new Existing(
                 row.getId().toString(),
                 row.getUserId(),
@@ -29,8 +38,8 @@ public class JpaCustomerRepository implements CustomerRepository {
                 row.getLastName(),
                 row.getEmail(),
                 row.getSince(),
-                row.getDefaultShippingId().toString(),
-                row.getDefaultBillingId().toString()
+                shipId,
+                billId
         );
     }
 

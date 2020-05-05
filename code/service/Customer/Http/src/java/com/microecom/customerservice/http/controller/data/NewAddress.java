@@ -6,7 +6,7 @@ import javax.validation.constraints.*;
 import java.util.Optional;
 
 public class NewAddress implements Address {
-    private final String customerId;
+    private String customerId;
 
     private final String addressLine;
 
@@ -14,15 +14,18 @@ public class NewAddress implements Address {
 
     private final int zipCode;
 
-    public NewAddress(String customerId, String addressLine, String addressLine2, Integer zipCode) {
-        this.customerId = customerId;
+    public NewAddress(String addressLine, String addressLine2, Integer zipCode) {
         this.addressLine = addressLine;
         this.addressLine2 = addressLine2;
         this.zipCode = zipCode;
     }
 
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
     @Override
-    public @NotNull @NotBlank String getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
@@ -32,7 +35,7 @@ public class NewAddress implements Address {
     }
 
     @Override
-    public @NotBlank @Size(min = 5, max = 255) Optional<String> getAddressLine2() {
+    public Optional<@Size(min = 5, max = 255)String> getAddressLine2() {
         return Optional.ofNullable(addressLine2);
     }
 

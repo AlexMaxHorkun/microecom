@@ -66,8 +66,8 @@ public class JpaAddressRepository implements AddressRepository {
 
         var list = repo.findAllByCustomer_Id(UUID.fromString(id));
         var result = new ArrayList<ExistingAddress>();
-        while (list.iterator().hasNext()) {
-            result.add(convertToExisting(list.iterator().next()));
+        for (AddressRow row : list) {
+            result.add(convertToExisting(row));
         }
 
         return result;

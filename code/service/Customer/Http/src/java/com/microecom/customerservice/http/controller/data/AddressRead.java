@@ -14,11 +14,10 @@ public class AddressRead {
     private final int zipCode;
 
     public static AddressRead of(ExistingAddress address) {
-        String line2;
+        String line2 = null;
         if (address.getAddressLine2().isPresent()) {
             line2 = address.getAddressLine2().get();
         }
-        line2 = null;
         return new AddressRead(
                 address.getId(),
                 address.getAddressLine(),
