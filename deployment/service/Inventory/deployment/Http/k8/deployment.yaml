@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-http-service-deployment
+  labels:
+    app: inventory-http-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-http-service
+  template:
+    metadata:
+      labels:
+        app: inventory-http-service
+    spec:
+      containers:
+        - name: inventory-http-service-container-kube
+          image: inventory-http-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: debug
+              containerPort: 5008

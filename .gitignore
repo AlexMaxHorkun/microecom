@@ -7,6 +7,9 @@
 /code/service/Customer/Http/target/
 /code/service/Catalog/Http/target/
 /code/service/Catalog/Model/target/
+/code/service/Inventory/Model/target/
+/code/service/Inventory/Http/target/
 /deployment/service/Auth/deployment/App/image/resource/*.jar
 /deployment/service/Customer/deployment/Http/image/resource/*.jar
 /deployment/service/Catalog/deployment/Http/image/resource/*.jar
+/deployment/service/Inventory/deployment/Http/image/resource/*.jar
