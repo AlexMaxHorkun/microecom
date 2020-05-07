@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-zookeeper-deployment
+  labels:
+    app: kafka-zookeeper-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-zookeeper-service
+  template:
+    metadata:
+      labels:
+        app: kafka-zookeeper-service
+    spec:
+      containers:
+        - name: kafka-zookeeper-container-kube
+          image: kafka-zookeeper:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: zookeeper
+              containerPort: 2181

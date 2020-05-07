@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-broker-deployment
+  labels:
+    app: kafka-broker-service
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: kafka-broker-service
+  template:
+    metadata:
+      labels:
+        app: kafka-broker-service
+    spec:
+      containers:
+        - name: kafka-broker-container-kube
+          image: kafka-broker:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: kafkabroker
+              containerPort: 9092

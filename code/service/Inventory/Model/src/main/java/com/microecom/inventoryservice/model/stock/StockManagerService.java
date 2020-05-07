@@ -1,9 +1,8 @@
 package com.microecom.inventoryservice.model.stock;
 
+import com.microecom.inventoryservice.model.EventPublisher;
 import com.microecom.inventoryservice.model.StockManager;
-import com.microecom.inventoryservice.model.data.CalculatedAvailable;
-import com.microecom.inventoryservice.model.data.Stock;
-import com.microecom.inventoryservice.model.data.StockUpdate;
+import com.microecom.inventoryservice.model.data.*;
 import com.microecom.inventoryservice.model.storage.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,13 +15,21 @@ import java.util.Map;
 public class StockManagerService implements StockManager {
     private final StockRepository repo;
 
-    public StockManagerService(@Autowired StockRepository repo) {
+    private final EventPublisher publisher;
+
+    public StockManagerService(@Autowired StockRepository repo, @Autowired EventPublisher publisher) {
         this.repo = repo;
+        this.publisher = publisher;
     }
 
     @Override
     public Stock create(Stock stock) throws IllegalArgumentException {
-        return repo.create(stock);
+        var created = repo.create(stock);
+        publisher.publish(
+                new Event("stock-changed", new StockChangedEvent(created.getProductId(), created.getAvailable()))
+        );
+
+        return created;
     }
 
     @Override
@@ -31,7 +38,12 @@ public class StockManagerService implements StockManager {
             throw new IllegalArgumentException("Available field is required for an update");
         }
 
-        return repo.update(update);
+        var updated = repo.update(update);
+        publisher.publish(
+                new Event("stock-changed", new StockChangedEvent(updated.getProductId(), updated.getAvailable()))
+        );
+
+        return updated;
     }
 
     @Override
