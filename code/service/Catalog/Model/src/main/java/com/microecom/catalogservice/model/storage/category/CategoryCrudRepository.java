@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CategoryCrudRepository extends CrudRepository<CategoryRow, UUID> {
-    @Query("select c from CategoryRow c join ProductRow p on p.category = c where p is not null group by c")
+    @Query("select c from CategoryRow c join ProductRow p on p.category = c where p is not null and p.available = true group by c")
     List<CategoryRow> findWithProducts();
 }

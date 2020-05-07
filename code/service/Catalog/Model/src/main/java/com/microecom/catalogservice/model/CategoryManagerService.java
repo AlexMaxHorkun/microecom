@@ -13,8 +13,11 @@ import java.util.List;
 public class CategoryManagerService implements CategoryManager {
     private final CategoryRepository repo;
 
-    public CategoryManagerService(@Autowired CategoryRepository repo) {
+    private final ProductManager products;
+
+    public CategoryManagerService(@Autowired CategoryRepository repo, @Autowired ProductManager products) {
         this.repo = repo;
+        this.products = products;
     }
 
     @Override
@@ -34,6 +37,8 @@ public class CategoryManagerService implements CategoryManager {
 
     @Override
     public List<ExistingCategory> findList(boolean onlyWithProducts) {
+        products.updateMissingAvailability();
+
         return repo.findAll(onlyWithProducts);
     }
 }

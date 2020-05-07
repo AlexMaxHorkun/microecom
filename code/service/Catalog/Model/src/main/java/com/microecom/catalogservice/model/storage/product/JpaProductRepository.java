@@ -6,13 +6,16 @@ import com.microecom.catalogservice.model.data.ProductListCriteria;
 import com.microecom.catalogservice.model.data.ProductUpdate;
 import com.microecom.catalogservice.model.storage.ProductRepository;
 import com.microecom.catalogservice.model.storage.category.CategoryCrudRepository;
+import com.microecom.catalogservice.model.storage.data.ProductAvailabilityUpdate;
 import com.microecom.catalogservice.model.storage.product.data.Existing;
 import com.microecom.catalogservice.model.storage.product.data.ProductRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,6 +90,9 @@ public class JpaProductRepository implements ProductRepository {
     @Override
     public List<ExistingProduct> findAll(ProductListCriteria criteria) {
         Iterable<ProductRow> found;
+        if (criteria.getAvailableIsNull().isPresent()) {
+            throw new RuntimeException("Not implemented");
+        }
         if (criteria.getCategoryId().isEmpty()) {
             found = repo.findAll();
         } else {
@@ -95,10 +101,53 @@ public class JpaProductRepository implements ProductRepository {
 
         var list = new ArrayList<ExistingProduct>();
         for (ProductRow row : found) {
-            list.add(convertToExisting(row));
+            if (criteria.getAvailable().isEmpty() || (row.getAvailable().isPresent() && criteria.getAvailable().get().equals(row.getAvailable().get()))) {
+                list.add(convertToExisting(row));
+            }
         }
 
         return list;
+    }
+
+    @Transactional
+    @Override
+    public Iterable<String> findAllIdsForUpdate(ProductListCriteria criteria) {
+        if (criteria.getAvailableIsNull().isPresent()) {
+            Iterable<UUID> found;
+            if (criteria.getAvailableIsNull().get()){
+                found = repo.findAllIdsByAvailable(null);
+            } else {
+                throw new RuntimeException("Not implemented");
+            }
+            var foundStrings = new HashSet<String>();
+            for (UUID id : found) {
+                foundStrings.add(id.toString());
+            }
+
+            return foundStrings;
+        }
+
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Transactional
+    @Override
+    public void updateAvailability(Iterable<ProductAvailabilityUpdate> forProducts) {
+        var available = new HashSet<UUID>();
+        var notAvailable = new HashSet<UUID>();
+        for (ProductAvailabilityUpdate u : forProducts) {
+            if (u.isAvailable()) {
+                available.add(UUID.fromString(u.getForProductId()));
+            } else {
+                notAvailable.add(UUID.fromString(u.getForProductId()));
+            }
+        }
+        if (!available.isEmpty()) {
+            repo.updateAvailableFor(available, true);
+        }
+        if (!notAvailable.isEmpty()) {
+            repo.updateAvailableFor(notAvailable, false);
+        }
     }
 
     private Existing convertToExisting(ProductRow row) {

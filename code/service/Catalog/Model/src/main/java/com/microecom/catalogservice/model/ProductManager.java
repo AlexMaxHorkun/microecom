@@ -6,6 +6,7 @@ import com.microecom.catalogservice.model.data.ProductListCriteria;
 import com.microecom.catalogservice.model.data.ProductUpdate;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Manages products.
@@ -18,4 +19,6 @@ public interface ProductManager {
     void delete(String id) throws IllegalArgumentException;
 
     List<ExistingProduct> findList(ProductListCriteria criteria) throws IllegalArgumentException;
+
+    Set<String> updateMissingAvailability();
 }
