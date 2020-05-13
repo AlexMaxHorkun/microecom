@@ -2,18 +2,17 @@ package com.microecom.catalogservice.model;
 
 import com.microecom.catalogservice.model.client.InventoryClient;
 import com.microecom.catalogservice.model.client.data.Stock;
-import com.microecom.catalogservice.model.data.ExistingProduct;
-import com.microecom.catalogservice.model.data.ProductInfo;
-import com.microecom.catalogservice.model.data.ProductListCriteria;
-import com.microecom.catalogservice.model.data.ProductUpdate;
+import com.microecom.catalogservice.model.data.*;
 import com.microecom.catalogservice.model.storage.ProductRepository;
 import com.microecom.catalogservice.model.storage.data.ProductAvailabilityUpdate;
+import com.microecom.inventoryservice.eventlist.StockChangedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -71,5 +70,21 @@ public class ProductManagerService implements ProductManager {
         repo.updateAvailability(updates);
 
         return updated;
+    }
+
+    @Override
+    public Optional<ExistingProduct> findById(String id) {
+        return repo.findById(id);
+    }
+
+    @Override
+    public void consumeStockUpdate(StockChangedEvent update) throws IllegalArgumentException {
+        var found = findById(update.getProductId());
+        if (found.isEmpty()) {
+            throw new IllegalArgumentException("Product not found");
+        }
+        var available = new HashSet<ProductAvailabilityUpdate>();
+        available.add(new ProductAvailabilityUpdate(update.getProductId(), update.getAvailable() > 0));
+        repo.updateAvailability(available);
     }
 }

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-admin-deployment
+  labels:
+    app: kafka-admin-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-admin-service
+  template:
+    metadata:
+      labels:
+        app: kafka-admin-service
+    spec:
+      containers:
+        - name: kafka-admin-container-kube
+          image: obsidiandynamics/kafdrop:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9000
+          env:
+            - name: KAFKA_BROKERCONNECT
+              value: kafka-broker-service-service:9092

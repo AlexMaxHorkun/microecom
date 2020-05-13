@@ -19,10 +19,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().disable()
                 .authorizeRequests().anyRequest().permitAll();
     }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
-        web.debug(true);
-    }
 }

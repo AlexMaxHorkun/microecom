@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-event-service-deployment
+  labels:
+    app: catalog-event-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-event-service
+  template:
+    metadata:
+      labels:
+        app: catalog-event-service
+    spec:
+      containers:
+        - name: catalog-event-service-container-kube
+          image: catalog-event-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: debug
+              containerPort: 5010

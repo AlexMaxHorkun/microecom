@@ -14,10 +14,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class JpaProductRepository implements ProductRepository {
@@ -148,6 +145,11 @@ public class JpaProductRepository implements ProductRepository {
         if (!notAvailable.isEmpty()) {
             repo.updateAvailableFor(notAvailable, false);
         }
+    }
+
+    @Override
+    public Optional<ExistingProduct> findById(String id) {
+        return repo.findById(UUID.fromString(id)).map(this::convertToExisting);
     }
 
     private Existing convertToExisting(ProductRow row) {

@@ -1,11 +1,10 @@
 package com.microecom.catalogservice.model;
 
-import com.microecom.catalogservice.model.data.ExistingProduct;
-import com.microecom.catalogservice.model.data.ProductInfo;
-import com.microecom.catalogservice.model.data.ProductListCriteria;
-import com.microecom.catalogservice.model.data.ProductUpdate;
+import com.microecom.catalogservice.model.data.*;
+import com.microecom.inventoryservice.eventlist.StockChangedEvent;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -21,4 +20,8 @@ public interface ProductManager {
     List<ExistingProduct> findList(ProductListCriteria criteria) throws IllegalArgumentException;
 
     Set<String> updateMissingAvailability();
+
+    Optional<ExistingProduct> findById(String id);
+
+    void consumeStockUpdate(StockChangedEvent update) throws IllegalArgumentException;
 }

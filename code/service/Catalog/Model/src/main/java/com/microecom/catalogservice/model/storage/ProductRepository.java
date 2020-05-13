@@ -8,6 +8,7 @@ import com.microecom.catalogservice.model.storage.data.ProductAvailabilityUpdate
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface ProductRepository {
@@ -22,4 +23,6 @@ public interface ProductRepository {
     Iterable<String> findAllIdsForUpdate(ProductListCriteria criteria);
 
     void updateAvailability(Iterable<ProductAvailabilityUpdate> forProducts);
+
+    Optional<ExistingProduct> findById(String id);
 }

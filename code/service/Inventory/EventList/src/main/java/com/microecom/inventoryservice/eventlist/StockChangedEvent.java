@@ -1,12 +1,14 @@
-package com.microecom.inventoryservice.model.data;
+package com.microecom.inventoryservice.eventlist;
 
 /**
  * Issued when stock for a product is updated.
  */
 public class StockChangedEvent {
-    private final String productId;
+    private String productId;
 
-    private final Integer available;
+    private Integer available;
+
+    public StockChangedEvent() {}
 
     public StockChangedEvent(String productId, Integer available) {
         this.productId = productId;
@@ -19,5 +21,13 @@ public class StockChangedEvent {
 
     public Integer getAvailable() {
         return available;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public void setAvailable(Integer available) {
+        this.available = available;
     }
 }

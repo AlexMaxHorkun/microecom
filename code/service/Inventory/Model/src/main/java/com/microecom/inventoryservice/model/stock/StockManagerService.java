@@ -1,5 +1,6 @@
 package com.microecom.inventoryservice.model.stock;
 
+import com.microecom.inventoryservice.eventlist.StockChangedEvent;
 import com.microecom.inventoryservice.model.EventPublisher;
 import com.microecom.inventoryservice.model.StockManager;
 import com.microecom.inventoryservice.model.data.*;

@@ -35,12 +35,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.oauth2ResourceServer().jwt();
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
-        web.debug(true);
-    }
-
     @Bean
     public PrincipalManager principalManager(JwtAwarePrincipalManager jwtManager) {
         var set = new HashSet<PrincipalManager>();

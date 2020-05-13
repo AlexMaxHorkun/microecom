@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
 cd /etc/kafka
-sed -i "/s/broker.id=0/broker.id=$(1 + RANDOM % 1000)/g" server.properties
+rando=$(od -A n -t d -N 1 /dev/urandom)
+rando=$(echo $rando)
+sed -i "s/broker.id=0/broker.id=$rando/g" server.properties
 kafka/bin/kafka-server-start.sh server.properties
