@@ -3,9 +3,9 @@ package com.microecom.catalogservice.model;
 import com.microecom.catalogservice.model.client.InventoryClient;
 import com.microecom.catalogservice.model.client.data.Stock;
 import com.microecom.catalogservice.model.data.*;
+import com.microecom.catalogservice.model.exception.ProductNotFoundException;
 import com.microecom.catalogservice.model.storage.ProductRepository;
 import com.microecom.catalogservice.model.storage.data.ProductAvailabilityUpdate;
-import com.microecom.inventoryservice.eventlist.StockChangedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +37,7 @@ public class ProductManagerService implements ProductManager {
     }
 
     @Override
-    public void delete(String id) throws IllegalArgumentException {
+    public void delete(String id) throws ProductNotFoundException {
         repo.delete(id);
     }
 
@@ -75,16 +75,5 @@ public class ProductManagerService implements ProductManager {
     @Override
     public Optional<ExistingProduct> findById(String id) {
         return repo.findById(id);
-    }
-
-    @Override
-    public void consumeStockUpdate(StockChangedEvent update) throws IllegalArgumentException {
-        var found = findById(update.getProductId());
-        if (found.isEmpty()) {
-            throw new IllegalArgumentException("Product not found");
-        }
-        var available = new HashSet<ProductAvailabilityUpdate>();
-        available.add(new ProductAvailabilityUpdate(update.getProductId(), update.getAvailable() > 0));
-        repo.updateAvailability(available);
     }
 }

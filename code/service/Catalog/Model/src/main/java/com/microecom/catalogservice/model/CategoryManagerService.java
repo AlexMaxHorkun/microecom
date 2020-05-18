@@ -3,6 +3,7 @@ package com.microecom.catalogservice.model;
 import com.microecom.catalogservice.model.data.CategoryInfo;
 import com.microecom.catalogservice.model.data.CategoryUpdate;
 import com.microecom.catalogservice.model.data.ExistingCategory;
+import com.microecom.catalogservice.model.exception.CategoryNotFoundException;
 import com.microecom.catalogservice.model.storage.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class CategoryManagerService implements CategoryManager {
     }
 
     @Override
-    public void delete(String id) throws IllegalArgumentException {
+    public void delete(String id) throws CategoryNotFoundException {
         repo.delete(id);
     }
 

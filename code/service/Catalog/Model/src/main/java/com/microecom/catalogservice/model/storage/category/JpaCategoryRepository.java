@@ -3,6 +3,7 @@ package com.microecom.catalogservice.model.storage.category;
 import com.microecom.catalogservice.model.data.CategoryInfo;
 import com.microecom.catalogservice.model.data.CategoryUpdate;
 import com.microecom.catalogservice.model.data.ExistingCategory;
+import com.microecom.catalogservice.model.exception.CategoryNotFoundException;
 import com.microecom.catalogservice.model.storage.CategoryRepository;
 import com.microecom.catalogservice.model.storage.category.data.CategoryRow;
 import com.microecom.catalogservice.model.storage.category.data.Existing;
@@ -32,7 +33,7 @@ public class JpaCategoryRepository implements CategoryRepository {
     public ExistingCategory update(CategoryUpdate update) throws IllegalArgumentException {
         var found = repo.findById(UUID.fromString(update.getForId()));
         if (found.isEmpty()) {
-            throw new IllegalArgumentException("Category not found by given ID");
+            throw new CategoryNotFoundException();
         }
 
         var row = found.get();
@@ -44,11 +45,11 @@ public class JpaCategoryRepository implements CategoryRepository {
     }
 
     @Override
-    public void delete(String id) throws IllegalArgumentException {
+    public void delete(String id) throws CategoryNotFoundException {
         try {
             repo.deleteById(UUID.fromString(id));
         } catch (EmptyResultDataAccessException exception) {
-            throw new IllegalArgumentException("Category not found");
+            throw new CategoryNotFoundException();
         }
     }
 

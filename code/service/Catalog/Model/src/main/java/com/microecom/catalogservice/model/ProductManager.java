@@ -1,7 +1,7 @@
 package com.microecom.catalogservice.model;
 
 import com.microecom.catalogservice.model.data.*;
-import com.microecom.inventoryservice.eventlist.StockChangedEvent;
+import com.microecom.catalogservice.model.exception.ProductNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,13 +15,11 @@ public interface ProductManager {
 
     ExistingProduct update(ProductUpdate update) throws IllegalArgumentException;
 
-    void delete(String id) throws IllegalArgumentException;
+    void delete(String id) throws ProductNotFoundException;
 
     List<ExistingProduct> findList(ProductListCriteria criteria) throws IllegalArgumentException;
 
     Set<String> updateMissingAvailability();
 
     Optional<ExistingProduct> findById(String id);
-
-    void consumeStockUpdate(StockChangedEvent update) throws IllegalArgumentException;
 }

@@ -4,6 +4,8 @@ import com.microecom.catalogservice.model.data.ExistingProduct;
 import com.microecom.catalogservice.model.data.ProductInfo;
 import com.microecom.catalogservice.model.data.ProductListCriteria;
 import com.microecom.catalogservice.model.data.ProductUpdate;
+import com.microecom.catalogservice.model.exception.CategoryNotFoundException;
+import com.microecom.catalogservice.model.exception.ProductNotFoundException;
 import com.microecom.catalogservice.model.storage.ProductRepository;
 import com.microecom.catalogservice.model.storage.category.CategoryCrudRepository;
 import com.microecom.catalogservice.model.storage.data.ProductAvailabilityUpdate;
@@ -31,7 +33,7 @@ public class JpaProductRepository implements ProductRepository {
     public ExistingProduct create(ProductInfo newProduct) throws IllegalArgumentException {
         var categoryFound = categoryRepo.findById(UUID.fromString(newProduct.getCategoryId()));
         if (categoryFound.isEmpty()) {
-            throw new IllegalArgumentException("Invalid category link");
+            throw new CategoryNotFoundException();
         }
 
         return convertToExisting(
@@ -51,14 +53,14 @@ public class JpaProductRepository implements ProductRepository {
     public ExistingProduct update(ProductUpdate update) throws IllegalArgumentException {
         var found = repo.findById(UUID.fromString(update.getForId()));
         if (found.isEmpty()) {
-            throw new IllegalArgumentException("Product with given Id not found");
+            throw new ProductNotFoundException();
         }
 
         var row = found.get();
         if (update.getCategoryId().isPresent()) {
             var foundCategory = categoryRepo.findById(UUID.fromString(update.getCategoryId().get()));
             if (foundCategory.isEmpty()) {
-                throw new IllegalArgumentException("Invalid category link");
+                throw new CategoryNotFoundException();
             }
             row.setCategory(foundCategory.get());
         }
@@ -76,11 +78,11 @@ public class JpaProductRepository implements ProductRepository {
     }
 
     @Override
-    public void delete(String id) throws IllegalArgumentException {
+    public void delete(String id) throws ProductNotFoundException {
         try {
             repo.deleteById(UUID.fromString(id));
         } catch (EmptyResultDataAccessException exception) {
-            throw new IllegalArgumentException("Product not found");
+            throw new ProductNotFoundException();
         }
     }
 

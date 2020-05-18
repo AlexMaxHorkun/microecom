@@ -4,6 +4,7 @@ import com.microecom.catalogservice.model.data.ExistingProduct;
 import com.microecom.catalogservice.model.data.ProductInfo;
 import com.microecom.catalogservice.model.data.ProductListCriteria;
 import com.microecom.catalogservice.model.data.ProductUpdate;
+import com.microecom.catalogservice.model.exception.ProductNotFoundException;
 import com.microecom.catalogservice.model.storage.data.ProductAvailabilityUpdate;
 
 import java.util.Collection;
@@ -16,7 +17,7 @@ public interface ProductRepository {
 
     ExistingProduct update(ProductUpdate update) throws IllegalArgumentException;
 
-    void delete(String id) throws IllegalArgumentException;
+    void delete(String id) throws ProductNotFoundException;
 
     List<ExistingProduct> findAll(ProductListCriteria criteria);
 
