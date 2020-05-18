@@ -14,11 +14,11 @@
             </plugin>
         </plugins>
     </build>
-    <groupId>com.microecom.inventoryservice</groupId>
+    <groupId>com.microecom.paymentservice</groupId>
     <artifactId>eventlist</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Inventory Service | Event list</name>
-    <description>Events thrown by Inventory service</description>
+    <name>Payment Service | Event list</name>
+    <description>Events thrown by Payment service</description>
 
     <properties>
         <java.version>14</java.version>

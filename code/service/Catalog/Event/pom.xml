@@ -11,7 +11,7 @@
     <groupId>com.microecom.catalogservice</groupId>
     <artifactId>event</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Catalog service events processor</name>
+    <name>Catalog Service | Events</name>
     <description>Catalog service events processor</description>
 
     <properties>

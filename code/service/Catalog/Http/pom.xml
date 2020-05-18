@@ -11,7 +11,7 @@
     <groupId>com.microecom.catalogservice</groupId>
     <artifactId>http</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>HTTP Catalog service</name>
+    <name>Catalog Service | HTTP</name>
     <description>HTTP interface for catalog service</description>
 
     <properties>

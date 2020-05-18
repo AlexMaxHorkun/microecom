@@ -23,7 +23,7 @@
     <groupId>com.microecom.customerservice</groupId>
     <artifactId>model</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Customer service business logic layer</name>
+    <name>Customer Service | Model</name>
     <description>Customer service business logic layer</description>
 
     <properties>

@@ -11,7 +11,7 @@
     <groupId>com.microecom.inventoryservice</groupId>
     <artifactId>http</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>HTTP Inventory service</name>
+    <name>Inventory Service | HTTP</name>
     <description>HTTP interface for inventory service</description>
 
     <properties>

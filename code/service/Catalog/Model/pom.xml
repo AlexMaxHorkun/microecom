@@ -23,7 +23,7 @@
     <groupId>com.microecom.catalogservice</groupId>
     <artifactId>model</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Catalog service business logic layer</name>
+    <name>Catalog Service | Model</name>
     <description>Catalog service business logic layer</description>
 
     <properties>

@@ -20,11 +20,11 @@
         <version>2.2.6.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.microecom.inventoryservice</groupId>
+    <groupId>com.microecom.paymentservice</groupId>
     <artifactId>model</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Inventory Service | Model</name>
-    <description>Inventory service business logic layer</description>
+    <name>Payment Service | Model</name>
+    <description>Payment service business logic layer</description>
 
     <properties>
         <java.version>14</java.version>
@@ -32,7 +32,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.microecom.inventoryservice</groupId>
+            <groupId>com.microecom.paymentservice</groupId>
             <artifactId>eventlist</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
