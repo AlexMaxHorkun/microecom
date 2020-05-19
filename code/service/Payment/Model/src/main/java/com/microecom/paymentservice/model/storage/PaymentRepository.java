@@ -8,7 +8,7 @@ import com.microecom.paymentservice.model.storage.data.PaymentUpdate;
 import java.util.Optional;
 
 public interface PaymentRepository {
-    ExistingPayment create(NewPayment payment);
+    ExistingPayment create(NewPayment payment) throws IllegalArgumentException;
 
     Optional<ExistingPayment> findById(String id);
 

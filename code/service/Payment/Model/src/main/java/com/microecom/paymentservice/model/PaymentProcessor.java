@@ -7,7 +7,7 @@ import com.microecom.paymentservice.model.exception.InvalidPaymentDetailsExcepti
  * Processes payments.
  */
 public interface PaymentProcessor {
-    void post(Payment payment) throws InvalidPaymentDetailsException;
+    void post(Payment paymentInfo, String paymentId) throws InvalidPaymentDetailsException;
 
     boolean canProcess(Payment payment);
 }

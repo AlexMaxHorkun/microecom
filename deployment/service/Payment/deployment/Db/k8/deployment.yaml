@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-db-deployment
+  labels:
+    app: payment-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-db
+  template:
+    metadata:
+      labels:
+        app: payment-db
+    spec:
+      containers:
+        - name: payment-db-container-kube
+          image: payment-db:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: pgsql
+              containerPort: 5432

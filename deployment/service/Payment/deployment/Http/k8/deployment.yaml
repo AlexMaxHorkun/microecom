@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-http-service-deployment
+  labels:
+    app: payment-http-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-http-service
+  template:
+    metadata:
+      labels:
+        app: payment-http-service
+    spec:
+      containers:
+        - name: payment-http-service-container-kube
+          image: payment-http-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: debug
+              containerPort: 5011
