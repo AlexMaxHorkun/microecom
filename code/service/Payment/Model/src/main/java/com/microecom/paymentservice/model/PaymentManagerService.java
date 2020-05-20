@@ -30,7 +30,7 @@ public class PaymentManagerService implements PaymentManager {
     public String create(Payment payment) throws InvalidPaymentException {
         ExistingPayment created;
         try {
-            created = repo.create(new NewPosted(payment.getForOrderId(), payment.getByCustomerId()));
+            created = repo.create(new NewPosted(payment.getForOrderId(), payment.getByCustomerId(), payment.getAmount()));
         } catch (IllegalArgumentException exception) {
             throw new InvalidPaymentException("Invalid payment fields.");
         }

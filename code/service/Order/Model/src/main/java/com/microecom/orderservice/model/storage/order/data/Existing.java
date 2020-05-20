@@ -15,11 +15,14 @@ public class Existing implements ExistingOrder {
 
     private final Set<OrderedQuantity> ordered;
 
-    public Existing(String id, OrderStatus status, String customerId, Set<OrderedQuantity> ordered) {
+    private final Double cost;
+
+    public Existing(String id, OrderStatus status, String customerId, Set<OrderedQuantity> ordered, Double cost) {
         this.id = id;
         this.status = status;
         this.customerId = customerId;
         this.ordered = ordered;
+        this.cost = cost;
     }
 
     @Override
@@ -40,5 +43,10 @@ public class Existing implements ExistingOrder {
     @Override
     public Set<OrderedQuantity> getOrdered() {
         return ordered;
+    }
+
+    @Override
+    public Double getCost() {
+        return cost;
     }
 }

@@ -31,7 +31,7 @@ public class RestPaymentServiceClient implements PaymentServiceClient {
     public void post(NewPayment payment) throws InvalidPaymentDetailsException {
         ResponseEntity response;
         if (payment.getPayment() instanceof CardPaymentDetails) {
-            response = postCard(payment.getOrderId(), payment.getCustomerId(), (CardPaymentDetails) payment.getPayment());
+            response = postCard(payment.getOrderId(), payment.getCustomerId(), (CardPaymentDetails) payment.getPayment(), payment.getAmount());
         } else {
             throw new IllegalArgumentException("Unknown payment details type");
         }
@@ -44,10 +44,10 @@ public class RestPaymentServiceClient implements PaymentServiceClient {
         }
     }
 
-    private ResponseEntity<Void> postCard(String orderId, String customerId, CardPaymentDetails payment) {
+    private ResponseEntity<Void> postCard(String orderId, String customerId, CardPaymentDetails payment, Double amount) {
         return rest.postForEntity(
                 paymentRestUri + "/V1/payment/card",
-                new RestCardPaymentRequest(orderId, customerId, payment.getCard(), payment.getExpiresMonth(), payment.getExpiresYear(), payment.getCvv()),
+                new RestCardPaymentRequest(orderId, customerId, amount, payment.getCard(), payment.getExpiresMonth(), payment.getExpiresYear(), payment.getCvv()),
                 Void.class
         );
     }

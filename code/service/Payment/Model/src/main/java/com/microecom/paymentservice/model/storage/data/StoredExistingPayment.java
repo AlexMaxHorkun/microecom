@@ -15,13 +15,16 @@ public class StoredExistingPayment implements ExistingPayment {
 
     private final String customerId;
 
-    public StoredExistingPayment(String id, Boolean posted, Integer code, String details, String orderId, String customerId) {
+    private final Double amount;
+
+    public StoredExistingPayment(String id, Boolean posted, Integer code, String details, String orderId, String customerId, Double amount) {
         this.id = id;
         this.posted = posted;
         this.code = code;
         this.details = details;
         this.orderId = orderId;
         this.customerId = customerId;
+        this.amount = amount;
     }
 
     @Override
@@ -52,5 +55,10 @@ public class StoredExistingPayment implements ExistingPayment {
     @Override
     public String getCustomerId() {
         return customerId;
+    }
+
+    @Override
+    public Double getAmount() {
+        return amount;
     }
 }

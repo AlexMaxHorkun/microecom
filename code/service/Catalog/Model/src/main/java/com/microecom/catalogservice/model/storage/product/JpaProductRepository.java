@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JpaProductRepository implements ProductRepository {
@@ -94,6 +95,8 @@ public class JpaProductRepository implements ProductRepository {
         }
         if (criteria.getCategoryId().isEmpty()) {
             found = repo.findAll();
+        } else if (criteria.getIds().isPresent()) {
+            found = repo.findAllById(criteria.getIds().get().stream().map(UUID::fromString).collect(Collectors.toSet()));
         } else {
             found = repo.findAllByCategory_Id(UUID.fromString(criteria.getCategoryId().get()));
         }

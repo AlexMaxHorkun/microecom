@@ -10,10 +10,13 @@ public class NewPayment {
 
     private final PaymentDetails payment;
 
-    public NewPayment(String orderId, String customerId, PaymentDetails payment) {
+    private final Double amount;
+
+    public NewPayment(String orderId, String customerId, PaymentDetails payment, Double amount) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.payment = payment;
+        this.amount = amount;
     }
 
     public String getOrderId() {
@@ -26,5 +29,9 @@ public class NewPayment {
 
     public PaymentDetails getPayment() {
         return payment;
+    }
+
+    public Double getAmount() {
+        return amount;
     }
 }

@@ -4,4 +4,6 @@ public interface NewPayment {
     String getOrderId();
 
     String getCustomerId();
+
+    Double getAmount();
 }

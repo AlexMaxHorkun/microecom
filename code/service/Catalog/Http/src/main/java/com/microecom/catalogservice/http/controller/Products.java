@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "/rest/V1/product")
@@ -42,8 +43,8 @@ public class Products {
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<ProductRead>> list(@RequestParam(required = false) String categoryId) {
-        var found = products.findList(new ProductListCriteria(categoryId));
+    public ResponseEntity<Iterable<ProductRead>> list(@RequestParam(required = false) String categoryId, @RequestParam(required = false) Set<String> productIds) {
+        var found = products.findList(new ProductListCriteria(categoryId, null, categoryId != null, productIds));
 
         return new ResponseEntity<>(ProductRead.listOf(found), HttpStatus.OK);
     }

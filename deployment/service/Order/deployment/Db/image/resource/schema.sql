@@ -1,6 +1,7 @@
 create table orders (
     id uuid not null primary key,
     customer_id uuid not null,
+    cost float not null check ( cost > 0.0 ),
     status smallint not null
 );
 

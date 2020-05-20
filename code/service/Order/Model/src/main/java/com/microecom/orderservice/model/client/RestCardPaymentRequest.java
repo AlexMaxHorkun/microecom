@@ -13,13 +13,16 @@ public class RestCardPaymentRequest {
 
     private String cvv;
 
-    public RestCardPaymentRequest(String orderId, String customerId, String cardNumbers, Integer expiresMonth, Integer expiresYear, String cvv) {
+    private Double amount;
+
+    public RestCardPaymentRequest(String orderId, String customerId, Double amount, String cardNumbers, Integer expiresMonth, Integer expiresYear, String cvv) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.cardNumbers = cardNumbers;
         this.expiresMonth = expiresMonth;
         this.expiresYear = expiresYear;
         this.cvv = cvv;
+        this.amount = amount;
     }
 
     public String getOrderId() {
@@ -68,5 +71,13 @@ public class RestCardPaymentRequest {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 }

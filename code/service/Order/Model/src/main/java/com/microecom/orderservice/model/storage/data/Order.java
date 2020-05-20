@@ -11,4 +11,6 @@ public interface Order {
     String getCustomerId();
 
     Set<OrderedQuantity> getOrdered();
+
+    Double getCost();
 }

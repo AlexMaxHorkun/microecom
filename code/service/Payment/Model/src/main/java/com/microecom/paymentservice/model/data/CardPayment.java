@@ -9,8 +9,8 @@ public class CardPayment extends AbstractPayment {
 
     private final String cvv;
 
-    public CardPayment(String orderId, String customerId, String cardNumbers, Integer expiresMonth, Integer expiresYear, String cvv) {
-        super(orderId, customerId);
+    public CardPayment(String orderId, String customerId, Double amount, String cardNumbers, Integer expiresMonth, Integer expiresYear, String cvv) {
+        super(orderId, customerId, amount);
         this.cardNumbers = cardNumbers;
         this.expiresMonth = expiresMonth;
         this.expiresYear = expiresYear;

@@ -21,10 +21,13 @@ public class PaymentRow {
 
     private String details;
 
-    public PaymentRow(UUID orderId, UUID customerId) {
+    private Double amount;
+
+    public PaymentRow(UUID orderId, UUID customerId, Double amount) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.id = UUID.randomUUID();
+        this.amount = amount;
     }
 
     public PaymentRow() {}
@@ -75,5 +78,13 @@ public class PaymentRow {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 }

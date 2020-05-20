@@ -14,13 +14,16 @@ public class OrderRow {
 
     private Integer status;
 
+    private Double cost;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderProductRow> products;
 
-    public OrderRow(UUID customerId, Integer status) {
+    public OrderRow(UUID customerId, Integer status, Double cost) {
         this.customerId = customerId;
         this.status = status;
         this.id = UUID.randomUUID();
+        this.cost = cost;
     }
 
     public OrderRow() {}
@@ -55,5 +58,13 @@ public class OrderRow {
 
     public void setProducts(Set<OrderProductRow> products) {
         this.products = products;
+    }
+
+    public Double getCost() {
+        return cost;
+    }
+
+    public void setCost(Double cost) {
+        this.cost = cost;
     }
 }

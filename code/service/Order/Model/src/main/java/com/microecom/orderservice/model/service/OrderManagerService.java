@@ -2,6 +2,7 @@ package com.microecom.orderservice.model.service;
 
 import com.microecom.orderservice.eventlist.OrderStatusChanged;
 import com.microecom.orderservice.eventlist.data.OrderedProduct;
+import com.microecom.orderservice.model.CatalogServiceClient;
 import com.microecom.orderservice.model.InventoryServiceClient;
 import com.microecom.orderservice.model.OrderManager;
 import com.microecom.orderservice.model.PaymentServiceClient;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderManagerService implements OrderManager {
@@ -29,32 +31,42 @@ public class OrderManagerService implements OrderManager {
 
     private final PaymentServiceClient paymentClient;
 
-    public OrderManagerService(@Autowired OrderRepository repo, @Autowired EventPublisher events, @Autowired InventoryServiceClient inventoryClient, @Autowired PaymentServiceClient paymentClient) {
+    private final CatalogServiceClient catalogClient;
+
+    public OrderManagerService(@Autowired OrderRepository repo, @Autowired EventPublisher events, @Autowired InventoryServiceClient inventoryClient, @Autowired PaymentServiceClient paymentClient, @Autowired CatalogServiceClient catalogClient) {
         this.repo = repo;
         this.events = events;
         this.inventoryClient = inventoryClient;
         this.paymentClient = paymentClient;
+        this.catalogClient = catalogClient;
     }
 
     @Transactional
     @Override
     public ExistingOrder place(NewOrder order) throws OutOfStockException, InvalidPaymentDetailsException {
+        var productIds = order.getOrdered().stream().map(OrderedQuantity::getProductId).collect(Collectors.toSet());
         var outOfStock = new HashSet<String>();
+        var stocks = inventoryClient.loadStocks(productIds);
         for (OrderedQuantity q : order.getOrdered()) {
-            outOfStock.add(q.getProductId());
-        }
-        var stocks = inventoryClient.loadStocks(outOfStock);
-        for (OrderedQuantity q : order.getOrdered()) {
-            if (stocks.containsKey(q.getProductId()) && stocks.get(q.getProductId()).getAvailable() >= q.getQuantity()) {
-                outOfStock.remove(q.getProductId());
+            if (!stocks.containsKey(q.getProductId()) || stocks.get(q.getProductId()).getAvailable() < q.getQuantity()) {
+                outOfStock.add(q.getProductId());
             }
         }
         if (!outOfStock.isEmpty()) {
             throw new OutOfStockException(outOfStock);
         }
 
-        var created = repo.create(new SimpleOrder(OrderStatus.NEW, order.getCustomerId(), order.getOrdered()));
-        paymentClient.post(new NewPayment(created.getId(), created.getCustomerId(), order.getPaymentDetails()));
+        var products = catalogClient.loadProducts(productIds);
+        var cost = 0.0;
+        for (OrderedQuantity q : order.getOrdered()) {
+            if (!products.containsKey(q.getProductId())) {
+                throw new OutOfStockException(Set.of(q.getProductId()));
+            }
+            cost += q.getQuantity() * products.get(q.getProductId()).getPrice();
+        }
+
+        var created = repo.create(new SimpleOrder(OrderStatus.NEW, order.getCustomerId(), order.getOrdered(), cost));
+        paymentClient.post(new NewPayment(created.getId(), created.getCustomerId(), order.getPaymentDetails(), cost));
         publishStatusUpdatedEvent(created.getId(), created.getOrdered(), created.getStatus());
 
         return created;
@@ -86,7 +98,7 @@ public class OrderManagerService implements OrderManager {
             order = updateStatus(found.get(), update.getStatus().get());
         }
         if (update.getPaymentDetails().isPresent()) {
-            paymentClient.post(new NewPayment(order.getId(), order.getCustomerId(), update.getPaymentDetails().get()));
+            paymentClient.post(new NewPayment(order.getId(), order.getCustomerId(), update.getPaymentDetails().get(), order.getCost()));
         }
 
         return order;

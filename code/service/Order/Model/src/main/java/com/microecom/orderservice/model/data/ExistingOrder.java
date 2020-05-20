@@ -7,4 +7,6 @@ public interface ExistingOrder extends OrderInfo {
     String getId();
 
     OrderStatus getStatus();
+
+    Double getCost();
 }

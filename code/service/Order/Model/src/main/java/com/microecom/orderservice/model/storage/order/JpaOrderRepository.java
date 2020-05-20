@@ -31,7 +31,7 @@ public class JpaOrderRepository implements OrderRepository {
     @Transactional
     @Override
     public ExistingOrder create(Order order) throws IllegalArgumentException {
-        var orderRow = new OrderRow(UUID.fromString(order.getCustomerId()), statusesReversed.get(order.getStatus()));
+        var orderRow = new OrderRow(UUID.fromString(order.getCustomerId()), statusesReversed.get(order.getStatus()), order.getCost());
         var products = new HashSet<OrderProductRow>();
         for (OrderedQuantity ordered : order.getOrdered()) {
             products.add(new OrderProductRow(orderRow, UUID.fromString(ordered.getProductId()), ordered.getQuantity()));
@@ -68,7 +68,7 @@ public class JpaOrderRepository implements OrderRepository {
             products.add(new Ordered(p.getProductId().toString(), p.getQty()));
         }
 
-        return new Existing(row.getId().toString(), statuses.get(row.getStatus()), row.getCustomerId().toString(), products);
+        return new Existing(row.getId().toString(), statuses.get(row.getStatus()), row.getCustomerId().toString(), products, row.getCost());
     }
 
     @Transactional
