@@ -1,9 +1,6 @@
 package com.microecom.orderservice.model.storage.order;
 
-import com.microecom.orderservice.model.data.ExistingOrder;
-import com.microecom.orderservice.model.data.OrderStatus;
-import com.microecom.orderservice.model.data.OrderUpdate;
-import com.microecom.orderservice.model.data.OrdersCriteria;
+import com.microecom.orderservice.model.data.*;
 import com.microecom.orderservice.model.exception.InvalidOrderDataException;
 import com.microecom.orderservice.model.exception.OrderNotFoundException;
 import com.microecom.orderservice.model.storage.OrderRepository;
@@ -11,6 +8,7 @@ import com.microecom.orderservice.model.storage.data.Order;
 import com.microecom.orderservice.model.storage.order.data.Existing;
 import com.microecom.orderservice.model.storage.order.data.OrderProductRow;
 import com.microecom.orderservice.model.storage.order.data.OrderRow;
+import com.microecom.orderservice.model.storage.order.data.Ordered;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +33,8 @@ public class JpaOrderRepository implements OrderRepository {
     public ExistingOrder create(Order order) throws IllegalArgumentException {
         var orderRow = new OrderRow(UUID.fromString(order.getCustomerId()), statusesReversed.get(order.getStatus()));
         var products = new HashSet<OrderProductRow>();
-        for (String productId : order.getProductIds()) {
-            products.add(new OrderProductRow(orderRow, UUID.fromString(productId)));
+        for (OrderedQuantity ordered : order.getOrdered()) {
+            products.add(new OrderProductRow(orderRow, UUID.fromString(ordered.getProductId()), ordered.getQuantity()));
         }
         orderRow.setProducts(products);
 
@@ -65,9 +63,9 @@ public class JpaOrderRepository implements OrderRepository {
     }
 
     private ExistingOrder convert(OrderRow row) {
-        var products = new HashSet<String>();
+        var products = new HashSet<OrderedQuantity>();
         for (OrderProductRow p : row.getProducts()) {
-            products.add(p.getProductId().toString());
+            products.add(new Ordered(p.getProductId().toString(), p.getQty()));
         }
 
         return new Existing(row.getId().toString(), statuses.get(row.getStatus()), row.getCustomerId().toString(), products);

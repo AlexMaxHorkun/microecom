@@ -10,5 +10,5 @@ create table reservations (
     number int not null check ( number > 0 ),
     fulfilled boolean not null,
     created timestamp not null,
-    unique (order_id, product_id)
+    unique (product_id, order_id)
 );

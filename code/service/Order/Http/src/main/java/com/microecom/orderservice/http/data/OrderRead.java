@@ -2,21 +2,24 @@ package com.microecom.orderservice.http.data;
 
 import com.microecom.orderservice.model.data.ExistingOrder;
 import com.microecom.orderservice.model.data.OrderStatus;
+import com.microecom.orderservice.model.data.OrderedQuantity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class OrderRead {
-    private Set<String> productIds;
+    private Set<OrderedRead> ordered;
 
     private String id;
 
     private OrderStatus status;
 
     public static OrderRead of(ExistingOrder order) {
-        return new OrderRead(order.getProductIds(), order.getId(), order.getStatus());
+        var ordered = new HashSet<OrderedRead>();
+        for (OrderedQuantity q : order.getOrdered()) {
+            ordered.add(OrderedRead.of(q));
+        }
+
+        return new OrderRead(ordered, order.getId(), order.getStatus());
     }
 
     public static List<OrderRead> of(Collection<ExistingOrder> orders) {
@@ -30,18 +33,10 @@ public class OrderRead {
 
     public OrderRead() {}
 
-    public OrderRead(Set<String> productIds, String id, OrderStatus status) {
-        this.productIds = productIds;
+    public OrderRead(Set<OrderedRead> ordered, String id, OrderStatus status) {
+        this.ordered = ordered;
         this.id = id;
         this.status = status;
-    }
-
-    public Set<String> getProductIds() {
-        return productIds;
-    }
-
-    public void setProductIds(Set<String> productIds) {
-        this.productIds = productIds;
     }
 
     public String getId() {
@@ -58,5 +53,13 @@ public class OrderRead {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public Set<OrderedRead> getOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(Set<OrderedRead> ordered) {
+        this.ordered = ordered;
     }
 }

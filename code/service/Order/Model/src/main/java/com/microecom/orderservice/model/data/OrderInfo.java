@@ -8,5 +8,5 @@ import java.util.Set;
 public interface OrderInfo {
     String getCustomerId();
 
-    Set<String> getProductIds();
+    Set<OrderedQuantity> getOrdered();
 }

@@ -1,6 +1,7 @@
 package com.microecom.orderservice.eventlist;
 
 import com.microecom.orderservice.eventlist.data.OrderStatus;
+import com.microecom.orderservice.eventlist.data.OrderedProduct;
 
 import java.util.Set;
 
@@ -10,13 +11,13 @@ import java.util.Set;
 public class OrderStatusChanged {
     private String orderId;
 
-    private Set<String> productIds;
+    private Set<OrderedProduct> ordered;
 
     private OrderStatus newStatus;
 
-    public OrderStatusChanged(String orderId, Set<String> productIds, OrderStatus newStatus) {
+    public OrderStatusChanged(String orderId, Set<OrderedProduct> ordered, OrderStatus newStatus) {
         this.orderId = orderId;
-        this.productIds = productIds;
+        this.ordered = ordered;
         this.newStatus = newStatus;
     }
 
@@ -30,19 +31,19 @@ public class OrderStatusChanged {
         this.orderId = orderId;
     }
 
-    public Set<String> getProductIds() {
-        return productIds;
-    }
-
-    public void setProductIds(Set<String> productIds) {
-        this.productIds = productIds;
-    }
-
     public OrderStatus getNewStatus() {
         return newStatus;
     }
 
     public void setNewStatus(OrderStatus newStatus) {
         this.newStatus = newStatus;
+    }
+
+    public Set<OrderedProduct> getOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(Set<OrderedProduct> ordered) {
+        this.ordered = ordered;
     }
 }

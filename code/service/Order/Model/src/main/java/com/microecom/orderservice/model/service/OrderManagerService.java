@@ -1,6 +1,7 @@
 package com.microecom.orderservice.model.service;
 
 import com.microecom.orderservice.eventlist.OrderStatusChanged;
+import com.microecom.orderservice.eventlist.data.OrderedProduct;
 import com.microecom.orderservice.model.InventoryServiceClient;
 import com.microecom.orderservice.model.OrderManager;
 import com.microecom.orderservice.model.PaymentServiceClient;
@@ -38,29 +39,23 @@ public class OrderManagerService implements OrderManager {
     @Transactional
     @Override
     public ExistingOrder place(NewOrder order) throws OutOfStockException, InvalidPaymentDetailsException {
-        var stocks = inventoryClient.loadStocks(order.getProductIds());
         var outOfStock = new HashSet<String>();
-        for (String p : order.getProductIds()) {
-            if (!stocks.containsKey(p) || stocks.get(p).getAvailable() < 1) {
-                outOfStock.add(p);
+        for (OrderedQuantity q : order.getOrdered()) {
+            outOfStock.add(q.getProductId());
+        }
+        var stocks = inventoryClient.loadStocks(outOfStock);
+        for (OrderedQuantity q : order.getOrdered()) {
+            if (stocks.containsKey(q.getProductId()) && stocks.get(q.getProductId()).getAvailable() >= q.getQuantity()) {
+                outOfStock.remove(q.getProductId());
             }
         }
         if (!outOfStock.isEmpty()) {
             throw new OutOfStockException(outOfStock);
         }
 
-        var created = repo.create(new SimpleOrder(OrderStatus.NEW, order.getCustomerId(), order.getProductIds()));
+        var created = repo.create(new SimpleOrder(OrderStatus.NEW, order.getCustomerId(), order.getOrdered()));
         paymentClient.post(new NewPayment(created.getId(), created.getCustomerId(), order.getPaymentDetails()));
-        events.publish(
-                new Event(
-                        "order-status-changed",
-                        new OrderStatusChanged(
-                                created.getId(),
-                                created.getProductIds(),
-                                statuses.get(created.getStatus())
-                        )
-                )
-        );
+        publishStatusUpdatedEvent(created.getId(), created.getOrdered(), created.getStatus());
 
         return created;
     }
@@ -97,6 +92,24 @@ public class OrderManagerService implements OrderManager {
         return order;
     }
 
+    private void publishStatusUpdatedEvent(String orderId, Set<OrderedQuantity> ordered, OrderStatus status) {
+        var converted = new HashSet<OrderedProduct>();
+        for (OrderedQuantity q : ordered) {
+            converted.add(new OrderedProduct(q.getProductId(), q.getQuantity()));
+        }
+
+        events.publish(
+                new Event(
+                        "order-status-changed",
+                        new OrderStatusChanged(
+                                orderId,
+                                converted,
+                                statuses.get(status)
+                        )
+                )
+        );
+    }
+
     private ExistingOrder updateStatus(ExistingOrder order, OrderStatus status) throws InvalidOrderStatusException {
         repo.lockOrderForUpdate(order.getId());
         if (order.getStatus() == status) {
@@ -117,16 +130,7 @@ public class OrderManagerService implements OrderManager {
                 break;
         }
         var existing = repo.update(new OrderStatusUpdate(order.getId(), status));
-        events.publish(
-                new Event(
-                        "order-status-changed",
-                        new OrderStatusChanged(
-                                order.getId(),
-                                order.getProductIds(),
-                                statuses.get(existing.getStatus())
-                        )
-                )
-        );
+        publishStatusUpdatedEvent(order.getId(), order.getOrdered(), existing.getStatus());
 
         return existing;
     }

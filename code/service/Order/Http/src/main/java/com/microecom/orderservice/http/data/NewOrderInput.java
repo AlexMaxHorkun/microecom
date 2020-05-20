@@ -7,19 +7,11 @@ import javax.validation.constraints.Size;
 import java.util.Set;
 
 public class NewOrderInput {
-    private Set<String> productIds;
+    private Set<OrderedInput> ordered;
 
     private CardPaymentDetailsInput card;
 
     public NewOrderInput() {}
-
-    public @NotNull @Size(min = 1, max = 100) Set<@NotEmpty String> getProductIds() {
-        return productIds;
-    }
-
-    public void setProductIds(Set<String> productIds) {
-        this.productIds = productIds;
-    }
 
     public @Valid @NotNull CardPaymentDetailsInput getCard() {
         return card;
@@ -27,5 +19,13 @@ public class NewOrderInput {
 
     public void setCard(CardPaymentDetailsInput card) {
         this.card = card;
+    }
+
+    public @NotNull @Size(min = 1) Set<@Valid OrderedInput> getOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(Set<OrderedInput> ordered) {
+        this.ordered = ordered;
     }
 }

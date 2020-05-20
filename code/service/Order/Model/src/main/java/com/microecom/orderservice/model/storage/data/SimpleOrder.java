@@ -1,6 +1,7 @@
 package com.microecom.orderservice.model.storage.data;
 
 import com.microecom.orderservice.model.data.OrderStatus;
+import com.microecom.orderservice.model.data.OrderedQuantity;
 
 import java.util.Set;
 
@@ -9,12 +10,12 @@ public class SimpleOrder implements Order {
 
     private final String customerId;
 
-    private final Set<String> productIds;
+    private final Set<OrderedQuantity> ordered;
 
-    public SimpleOrder(OrderStatus status, String customerId, Set<String> productIds) {
+    public SimpleOrder(OrderStatus status, String customerId, Set<OrderedQuantity> ordered) {
         this.status = status;
         this.customerId = customerId;
-        this.productIds = productIds;
+        this.ordered = ordered;
     }
 
     @Override
@@ -28,7 +29,7 @@ public class SimpleOrder implements Order {
     }
 
     @Override
-    public Set<String> getProductIds() {
-        return productIds;
+    public Set<OrderedQuantity> getOrdered() {
+        return ordered;
     }
 }

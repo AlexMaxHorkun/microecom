@@ -15,9 +15,12 @@ public class OrderProductRow {
 
     private UUID productId;
 
-    public OrderProductRow(OrderRow order, UUID productId) {
+    private Integer qty;
+
+    public OrderProductRow(OrderRow order, UUID productId, Integer qty) {
         this.order = order;
         this.productId = productId;
+        this.qty = qty;
     }
 
     public OrderProductRow() {}
@@ -44,5 +47,13 @@ public class OrderProductRow {
 
     public void setProductId(UUID productId) {
         this.productId = productId;
+    }
+
+    public Integer getQty() {
+        return qty;
+    }
+
+    public void setQty(Integer qty) {
+        this.qty = qty;
     }
 }
