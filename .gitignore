@@ -14,9 +14,15 @@
 /code/service/Payment/Model/target/
 /code/service/Payment/Http/target/
 /code/service/Payment/EventList/target/
+/code/service/Order/Model/target/
+/code/service/Order/Http/target/
+/code/service/Order/EventList/target/
+/code/service/Order/Event/target/
 /deployment/service/Auth/deployment/App/image/resource/*.jar
 /deployment/service/Customer/deployment/Http/image/resource/*.jar
 /deployment/service/Catalog/deployment/Http/image/resource/*.jar
 /deployment/service/Catalog/deployment/Event/image/resource/*.jar
 /deployment/service/Inventory/deployment/Http/image/resource/*.jar
 /deployment/service/Payment/deployment/Http/image/resource/*.jar
+/deployment/service/Order/deployment/Http/image/resource/*.jar
+/deployment/service/Order/deployment/Event/image/resource/*.jar

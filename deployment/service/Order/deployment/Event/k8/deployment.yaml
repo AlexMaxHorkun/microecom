@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-event-service-deployment
+  labels:
+    app: order-event-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-event-service
+  template:
+    metadata:
+      labels:
+        app: order-event-service
+    spec:
+      containers:
+        - name: order-event-service-container-kube
+          image: order-event-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: debug
+              containerPort: 5013

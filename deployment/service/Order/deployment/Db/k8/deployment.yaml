@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-db-deployment
+  labels:
+    app: order-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-db
+  template:
+    metadata:
+      labels:
+        app: order-db
+    spec:
+      containers:
+        - name: order-db-container-kube
+          image: order-db:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: pgsql
+              containerPort: 5432

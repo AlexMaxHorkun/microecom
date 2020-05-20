@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-http-service-deployment
+  labels:
+    app: order-http-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-http-service
+  template:
+    metadata:
+      labels:
+        app: order-http-service
+    spec:
+      containers:
+        - name: order-http-service-container-kube
+          image: order-http-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: debug
+              containerPort: 5012
