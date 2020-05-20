@@ -3,6 +3,8 @@ package com.microecom.orderservice.model;
 import com.microecom.orderservice.model.data.ExistingOrder;
 import com.microecom.orderservice.model.data.NewOrder;
 import com.microecom.orderservice.model.data.OrderUpdate;
+import com.microecom.orderservice.model.data.OrdersCriteria;
+import com.microecom.orderservice.model.exception.InvalidOrderDataException;
 import com.microecom.orderservice.model.exception.InvalidPaymentDetailsException;
 import com.microecom.orderservice.model.exception.OrderNotFoundException;
 import com.microecom.orderservice.model.exception.OutOfStockException;
@@ -18,7 +20,7 @@ public interface OrderManager {
 
     Optional<ExistingOrder> findById(String id);
 
-    List<ExistingOrder> findList();
+    List<ExistingOrder> findList(OrdersCriteria criteria);
 
-    ExistingOrder update(OrderUpdate update) throws OrderNotFoundException;
+    ExistingOrder update(OrderUpdate update) throws OrderNotFoundException, InvalidOrderDataException, InvalidPaymentDetailsException;
 }

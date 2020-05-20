@@ -9,4 +9,6 @@ public interface OrderUpdate {
     String getForOrderId();
 
     Optional<OrderStatus> getStatus();
+
+    Optional<PaymentDetails> getPaymentDetails();
 }

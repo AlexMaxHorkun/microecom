@@ -7,9 +7,7 @@ import com.microecom.orderservice.model.PaymentServiceClient;
 import com.microecom.orderservice.model.data.*;
 import com.microecom.orderservice.model.event.EventPublisher;
 import com.microecom.orderservice.model.event.data.Event;
-import com.microecom.orderservice.model.exception.InvalidPaymentDetailsException;
-import com.microecom.orderservice.model.exception.OrderNotFoundException;
-import com.microecom.orderservice.model.exception.OutOfStockException;
+import com.microecom.orderservice.model.exception.*;
 import com.microecom.orderservice.model.storage.OrderRepository;
 import com.microecom.orderservice.model.storage.data.SimpleOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,12 +71,63 @@ public class OrderManagerService implements OrderManager {
     }
 
     @Override
-    public List<ExistingOrder> findList() {
-        return repo.findList();
+    public List<ExistingOrder> findList(OrdersCriteria criteria) {
+        return repo.findList(criteria);
     }
 
+    @Transactional
     @Override
-    public ExistingOrder update(OrderUpdate update) throws OrderNotFoundException {
-        return null;
+    public ExistingOrder update(OrderUpdate update) throws OrderNotFoundException, InvalidOrderDataException, InvalidPaymentDetailsException {
+        var found = findById(update.getForOrderId());
+        if (found.isEmpty()) {
+            throw new OrderNotFoundException();
+        }
+        if (update.getStatus().isEmpty() && update.getPaymentDetails().isEmpty()) {
+            throw new InvalidOrderDataException();
+        }
+
+        var order = found.get();
+        if (update.getStatus().isPresent()) {
+            order = updateStatus(found.get(), update.getStatus().get());
+        }
+        if (update.getPaymentDetails().isPresent()) {
+            paymentClient.post(new NewPayment(order.getId(), order.getCustomerId(), update.getPaymentDetails().get()));
+        }
+
+        return order;
+    }
+
+    private ExistingOrder updateStatus(ExistingOrder order, OrderStatus status) throws InvalidOrderStatusException {
+        repo.lockOrderForUpdate(order.getId());
+        if (order.getStatus() == status) {
+            throw new InvalidOrderStatusException();
+        }
+        switch (status) {
+            case NEW:
+                throw new InvalidOrderStatusException();
+            case PROCESSED:
+                if (order.getStatus() == OrderStatus.CANCELED) {
+                    throw new InvalidOrderStatusException();
+                }
+                break;
+            case PAYMENT_FAILED:
+                if (order.getStatus() == OrderStatus.CANCELED || order.getStatus() == OrderStatus.PROCESSED) {
+                    throw new InvalidOrderStatusException();
+                }
+                break;
+        }
+        var existing = repo.update(new OrderStatusUpdate(order.getId(), status));
+        events.publish(
+                new Event(
+                        "order-status-changed",
+                        new OrderStatusChanged(
+                                order.getId(),
+                                order.getProductIds(),
+                                statuses.get(existing.getStatus())
+                        )
+                )
+        );
+
+        return existing;
     }
 }

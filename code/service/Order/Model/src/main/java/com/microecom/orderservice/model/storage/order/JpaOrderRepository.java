@@ -2,6 +2,10 @@ package com.microecom.orderservice.model.storage.order;
 
 import com.microecom.orderservice.model.data.ExistingOrder;
 import com.microecom.orderservice.model.data.OrderStatus;
+import com.microecom.orderservice.model.data.OrderUpdate;
+import com.microecom.orderservice.model.data.OrdersCriteria;
+import com.microecom.orderservice.model.exception.InvalidOrderDataException;
+import com.microecom.orderservice.model.exception.OrderNotFoundException;
 import com.microecom.orderservice.model.storage.OrderRepository;
 import com.microecom.orderservice.model.storage.data.Order;
 import com.microecom.orderservice.model.storage.order.data.Existing;
@@ -45,9 +49,14 @@ public class JpaOrderRepository implements OrderRepository {
     }
 
     @Override
-    public List<ExistingOrder> findList() {
+    public List<ExistingOrder> findList(OrdersCriteria criteria) {
         var list = new ArrayList<ExistingOrder>();
-        var found = repo.findAll();
+        Iterable<OrderRow> found;
+        if (criteria.getCustomerId().isPresent()) {
+            found = repo.findByCustomerId(UUID.fromString(criteria.getCustomerId().get()));
+        } else {
+            found = repo.findAll();
+        }
         for (OrderRow row : found) {
             list.add(convert(row));
         }
@@ -62,5 +71,26 @@ public class JpaOrderRepository implements OrderRepository {
         }
 
         return new Existing(row.getId().toString(), statuses.get(row.getStatus()), row.getCustomerId().toString(), products);
+    }
+
+    @Transactional
+    @Override
+    public void lockOrderForUpdate(String id) {
+        repo.lockOrder(UUID.fromString(id));
+    }
+
+    @Transactional
+    @Override
+    public ExistingOrder update(OrderUpdate update) throws InvalidOrderDataException, OrderNotFoundException {
+        var found = repo.findById(UUID.fromString(update.getForOrderId()));
+        if (found.isEmpty()) {
+            throw new OrderNotFoundException();
+        }
+        var row = found.get();
+        if (update.getStatus().isPresent()) {
+            row.setStatus(statusesReversed.get(update.getStatus().get()));
+        }
+
+        return convert(repo.save(row));
     }
 }
