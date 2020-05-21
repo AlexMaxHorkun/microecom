@@ -2,7 +2,6 @@ package com.microecom.inventoryservice.model.stock;
 
 import com.microecom.inventoryservice.eventlist.StockChangedEvent;
 import com.microecom.inventoryservice.model.EventPublisher;
-import com.microecom.inventoryservice.model.StockCalculator;
 import com.microecom.inventoryservice.model.StockManager;
 import com.microecom.inventoryservice.model.data.*;
 import com.microecom.inventoryservice.model.exception.NoStockFoundException;
@@ -10,9 +9,6 @@ import com.microecom.inventoryservice.model.storage.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -20,8 +16,6 @@ public class StockManagerService implements StockManager {
     private final StockRepository repo;
 
     private final EventPublisher publisher;
-
-    private @Autowired StockCalculator calculator;
 
     public StockManagerService(@Autowired StockRepository repo, @Autowired EventPublisher publisher) {
         this.repo = repo;
@@ -46,7 +40,7 @@ public class StockManagerService implements StockManager {
 
         var updated = repo.update(update);
         publisher.publish(
-                new Event("stock-changed", new StockChangedEvent(updated.getProductId(), calculator.calculateAvailableFor(Set.of(updated.getProductId())).get(updated.getProductId()).getCalculated()))
+                new Event("stock-changed", new StockChangedEvent(updated.getProductId(), updated.getAvailable()))
         );
 
         return updated;
@@ -55,9 +49,6 @@ public class StockManagerService implements StockManager {
     @Override
     public Set<Stock> findByProductIds(Set<String> productIds) throws NoStockFoundException {
         var found = repo.findByProductIds(productIds);
-        if (found.size() != productIds.size()) {
-            throw new NoStockFoundException();
-        }
 
         return found;
     }

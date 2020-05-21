@@ -44,7 +44,7 @@ public class Products {
 
     @GetMapping
     public ResponseEntity<Iterable<ProductRead>> list(@RequestParam(required = false) String categoryId, @RequestParam(required = false) Set<String> productIds) {
-        var found = products.findList(new ProductListCriteria(categoryId, null, categoryId != null, productIds));
+        var found = products.findList(new ProductListCriteria(categoryId, null, categoryId != null ? true : null, productIds));
 
         return new ResponseEntity<>(ProductRead.listOf(found), HttpStatus.OK);
     }

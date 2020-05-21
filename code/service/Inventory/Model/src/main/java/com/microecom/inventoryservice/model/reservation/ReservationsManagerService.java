@@ -39,7 +39,10 @@ public class ReservationsManagerService implements ReservationsManager {
         if (reservation.getReserved().size() == 0) {
             throw new InvalidReservationDataException();
         }
-        stocks.findByProductIds(reservation.getReserved().stream().map(ReservedProduct::getProductId).collect(Collectors.toSet()));
+        var productStocks = stocks.findByProductIds(reservation.getReserved().stream().map(ReservedProduct::getProductId).collect(Collectors.toSet()));
+        if (productStocks.size() != reservation.getReserved().size()) {
+            throw new NoStockFoundException();
+        }
 
         try {
             return repo.create(reservation);

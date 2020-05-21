@@ -15,13 +15,16 @@ public class NewCardPayment {
 
     private String cvv;
 
-    public NewCardPayment(String orderId, String customerId, String cardNumbers, Integer expiresMonth, Integer expiresYear, String cvv) {
+    private Double amount;
+
+    public NewCardPayment(String orderId, String customerId, Double amount, String cardNumbers, Integer expiresMonth, Integer expiresYear, String cvv) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.cardNumbers = cardNumbers;
         this.expiresMonth = expiresMonth;
         this.expiresYear = expiresYear;
         this.cvv = cvv;
+        this.amount = amount;
     }
 
     public @NotEmpty String getOrderId() {
@@ -70,5 +73,13 @@ public class NewCardPayment {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+
+    public @NotNull @DecimalMin("0.1") @DecimalMax("10000000.0") Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 }

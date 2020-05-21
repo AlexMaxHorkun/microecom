@@ -10,17 +10,18 @@ public class OrderProductRow {
     @JoinColumn(name = "order_id")
     private OrderRow order;
 
-    @Id
-    private UUID orderId;
-
     private UUID productId;
 
     private Integer qty;
+
+    @Id
+    private UUID id;
 
     public OrderProductRow(OrderRow order, UUID productId, Integer qty) {
         this.order = order;
         this.productId = productId;
         this.qty = qty;
+        this.id = UUID.randomUUID();
     }
 
     public OrderProductRow() {}
@@ -31,14 +32,6 @@ public class OrderProductRow {
 
     public void setOrder(OrderRow order) {
         this.order = order;
-    }
-
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(UUID orderId) {
-        this.orderId = orderId;
     }
 
     public UUID getProductId() {

@@ -6,6 +6,7 @@ create table orders (
 );
 
 create table ordered_products (
+    id uuid not null unique,
     order_id uuid not null,
     product_id uuid not null,
     qty smallint not null check ( qty > 0 ),

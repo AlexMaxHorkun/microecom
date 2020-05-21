@@ -5,7 +5,6 @@ import com.microecom.inventoryservice.model.StockCalculator;
 import com.microecom.inventoryservice.model.StockManager;
 import com.microecom.inventoryservice.model.data.CalculatedAvailable;
 import com.microecom.inventoryservice.model.data.Stock;
-import com.microecom.inventoryservice.model.exception.NoStockFoundException;
 import com.microecom.inventoryservice.model.stock.data.Calculated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ public class Calculator implements StockCalculator {
     }
 
     @Override
-    public Map<String, CalculatedAvailable> calculateAvailableFor(Set<String> productIds) throws NoStockFoundException {
+    public Map<String, CalculatedAvailable> calculateAvailableFor(Set<String> productIds) {
         var stocks = manager.findByProductIds(productIds);
         var calculated = new HashMap<String, CalculatedAvailable>();
         for (Stock s : stocks) {

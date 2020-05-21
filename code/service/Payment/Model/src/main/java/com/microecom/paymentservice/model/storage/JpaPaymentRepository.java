@@ -26,7 +26,7 @@ public class JpaPaymentRepository implements PaymentRepository {
     @Override
     public ExistingPayment create(NewPayment payment) throws IllegalArgumentException {
         try {
-            return convert(repo.save(new PaymentRow(UUID.fromString(payment.getOrderId()), UUID.fromString(payment.getCustomerId()))));
+            return convert(repo.save(new PaymentRow(UUID.fromString(payment.getOrderId()), UUID.fromString(payment.getCustomerId()), payment.getAmount())));
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid payment data", e);
         }
@@ -66,7 +66,8 @@ public class JpaPaymentRepository implements PaymentRepository {
                 row.getCode(),
                 row.getDetails(),
                 row.getOrderId().toString(),
-                row.getCustomerId().toString()
+                row.getCustomerId().toString(),
+                row.getAmount()
         );
     }
 }

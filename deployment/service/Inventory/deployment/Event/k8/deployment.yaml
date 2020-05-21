@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-event-service-deployment
+  labels:
+    app: inventory-event-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-event-service
+  template:
+    metadata:
+      labels:
+        app: inventory-event-service
+    spec:
+      containers:
+        - name: inventory-event-service-container-kube
+          image: inventory-event-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: debug
+              containerPort: 5014

@@ -28,7 +28,7 @@ public class Payments {
     @PostMapping("/card")
     public ResponseEntity<Object> create(@Valid @NotNull NewCardPayment payment) {
         try {
-            initiator.initiate(new CardPayment(payment.getOrderId(), payment.getCustomerId(), payment.getCardNumbers(), payment.getExpiresMonth(), payment.getExpiresYear(), payment.getCvv()));
+            initiator.initiate(new CardPayment(payment.getOrderId(), payment.getCustomerId(), payment.getAmount(), payment.getCardNumbers(), payment.getExpiresMonth(), payment.getExpiresYear(), payment.getCvv()));
         } catch (InvalidPaymentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request data", e);
         } catch (InvalidPaymentDetailsException e) {
