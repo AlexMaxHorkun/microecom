@@ -11,7 +11,7 @@ spec:
       protocol: TCP
       name: http
       targetPort: 8080
-    - port: 5011
+    - port: 5012
       protocol: TCP
       name: debug
       targetPort: 5012
