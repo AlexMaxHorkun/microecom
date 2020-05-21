@@ -1,6 +1,6 @@
 create table stocks (
     product_id uuid not null primary key,
-    available int not null check ( available >= 0 )
+    available int not null
 );
 
 create table reservations (

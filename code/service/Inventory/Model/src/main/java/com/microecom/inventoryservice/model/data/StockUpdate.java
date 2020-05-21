@@ -9,4 +9,6 @@ public interface StockUpdate {
     String getForProductId();
 
     Optional<Integer> getAvailable();
+
+    Optional<Integer> getSubAvailable();
 }

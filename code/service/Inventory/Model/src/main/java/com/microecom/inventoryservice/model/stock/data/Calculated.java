@@ -1,4 +1,4 @@
-package com.microecom.inventoryservice.model.storage.stock.data;
+package com.microecom.inventoryservice.model.stock.data;
 
 import com.microecom.inventoryservice.model.data.CalculatedAvailable;
 

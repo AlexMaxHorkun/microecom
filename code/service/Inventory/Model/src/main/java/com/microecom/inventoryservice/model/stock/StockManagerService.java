@@ -2,8 +2,10 @@ package com.microecom.inventoryservice.model.stock;
 
 import com.microecom.inventoryservice.eventlist.StockChangedEvent;
 import com.microecom.inventoryservice.model.EventPublisher;
+import com.microecom.inventoryservice.model.StockCalculator;
 import com.microecom.inventoryservice.model.StockManager;
 import com.microecom.inventoryservice.model.data.*;
+import com.microecom.inventoryservice.model.exception.NoStockFoundException;
 import com.microecom.inventoryservice.model.storage.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,12 +13,15 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class StockManagerService implements StockManager {
     private final StockRepository repo;
 
     private final EventPublisher publisher;
+
+    private @Autowired StockCalculator calculator;
 
     public StockManagerService(@Autowired StockRepository repo, @Autowired EventPublisher publisher) {
         this.repo = repo;
@@ -35,26 +40,25 @@ public class StockManagerService implements StockManager {
 
     @Override
     public Stock update(StockUpdate update) throws IllegalArgumentException {
-        if (update.getAvailable().isEmpty()) {
-            throw new IllegalArgumentException("Available field is required for an update");
+        if (update.getAvailable().isEmpty() && update.getSubAvailable().isEmpty()) {
+            throw new IllegalArgumentException("Available/sub-available fields are required for an update");
         }
 
         var updated = repo.update(update);
         publisher.publish(
-                new Event("stock-changed", new StockChangedEvent(updated.getProductId(), updated.getAvailable()))
+                new Event("stock-changed", new StockChangedEvent(updated.getProductId(), calculator.calculateAvailableFor(Set.of(updated.getProductId())).get(updated.getProductId()).getCalculated()))
         );
 
         return updated;
     }
 
     @Override
-    public Map<String, CalculatedAvailable> calculateAvailableFor(List<String> productIds) throws IllegalArgumentException {
-        var data = repo.calculateAvailableFor(productIds);
-        var map = new HashMap<String, CalculatedAvailable>();
-        for (CalculatedAvailable datum : data) {
-            map.put(datum.getForProductId(), datum);
+    public Set<Stock> findByProductIds(Set<String> productIds) throws NoStockFoundException {
+        var found = repo.findByProductIds(productIds);
+        if (found.size() != productIds.size()) {
+            throw new NoStockFoundException();
         }
 
-        return map;
+        return found;
     }
 }

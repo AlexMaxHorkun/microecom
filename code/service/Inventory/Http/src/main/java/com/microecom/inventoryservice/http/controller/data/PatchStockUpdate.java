@@ -37,4 +37,9 @@ public class PatchStockUpdate implements StockUpdate {
     public void setAvailable(Integer available) {
         this.available = available;
     }
+
+    @Override
+    public Optional<Integer> getSubAvailable() {
+        return Optional.empty();
+    }
 }
