@@ -140,6 +140,11 @@ public class OrderManagerService implements OrderManager {
                     throw new InvalidOrderStatusException();
                 }
                 break;
+            case CANCELED:
+                if (order.getStatus() == OrderStatus.PROCESSED) {
+                    throw new InvalidOrderStatusException();
+                }
+                break;
         }
         var existing = repo.update(new OrderStatusUpdate(order.getId(), status));
         publishStatusUpdatedEvent(order.getId(), order.getOrdered(), existing.getStatus());

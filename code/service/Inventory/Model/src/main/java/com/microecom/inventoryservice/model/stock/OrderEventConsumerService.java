@@ -36,7 +36,7 @@ public class OrderEventConsumerService implements OrderEventConsumer {
         } else if (event.getNewStatus() == OrderStatus.PROCESSED) {
             reservations.fulfillByOrderId(event.getOrderId());
         } else if (event.getNewStatus() == OrderStatus.CANCELED) {
-            reservations.calculateReservedFor(event.getOrderId());
+            reservations.cancelByOrderId(event.getOrderId());
         }
     }
 }

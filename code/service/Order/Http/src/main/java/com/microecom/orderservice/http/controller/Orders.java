@@ -3,11 +3,10 @@ package com.microecom.orderservice.http.controller;
 import com.microecom.orderservice.http.data.*;
 import com.microecom.orderservice.http.model.PrincipalManager;
 import com.microecom.orderservice.model.OrderManager;
+import com.microecom.orderservice.model.data.ExistingOrder;
 import com.microecom.orderservice.model.data.OrdersCriteria;
 import com.microecom.orderservice.model.data.payment.CardPaymentDetails;
-import com.microecom.orderservice.model.exception.InvalidPaymentDetailsException;
-import com.microecom.orderservice.model.exception.OrderNotFoundException;
-import com.microecom.orderservice.model.exception.OutOfStockException;
+import com.microecom.orderservice.model.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,5 +67,19 @@ public class Orders {
     @GetMapping
     public ResponseEntity<Collection<OrderRead>> findAll(Principal principal) {
         return new ResponseEntity<>(OrderRead.of(manager.findList(new OrdersCriteria(principals.extractUserId(principal)))), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<OrderRead> cancel(@PathVariable String id) {
+        ExistingOrder order;
+        try {
+            order = manager.update(new OrderCancellation(id));
+        } catch (OrderNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found", e);
+        } catch (InvalidOrderStatusException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot cancel this order");
+        }
+
+        return new ResponseEntity<>(OrderRead.of(order), HttpStatus.OK);
     }
 }

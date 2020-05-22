@@ -21,6 +21,10 @@ public class PaymentConsumer implements PaymentEventsConsumer {
     @Override
     public void consumePaymentProcessed(PaymentProcessedEvent event) throws InvalidOrderStatusException, OrderNotFoundException {
         var status = event.getSuccessful() ? OrderStatus.PROCESSED : OrderStatus.PAYMENT_FAILED;
-        manager.update(new OrderStatusUpdate(event.getOrderId(), status));
+        try {
+            manager.update(new OrderStatusUpdate(event.getOrderId(), status));
+        } catch (InvalidOrderStatusException e) {
+            //Already canceled
+        }
     }
 }
