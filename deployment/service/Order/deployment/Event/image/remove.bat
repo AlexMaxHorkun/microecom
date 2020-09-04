@@ -1,1 +1,1 @@
-docker image rm -f order-event-service
+docker image rm -f order-event-service:local

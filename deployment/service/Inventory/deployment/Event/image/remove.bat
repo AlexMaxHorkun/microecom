@@ -1,1 +1,1 @@
-docker image rm -f inventory-event-service
+docker image rm -f inventory-event-service:local

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: kafka-zookeeper-container-kube
-          image: kafka-zookeeper:latest
+          image: kafka-zookeeper:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

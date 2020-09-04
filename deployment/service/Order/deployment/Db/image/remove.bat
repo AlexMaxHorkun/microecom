@@ -1,1 +1,1 @@
-docker image rm -f order-db
+docker image rm -f order-db:local

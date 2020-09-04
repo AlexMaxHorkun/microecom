@@ -1,1 +1,1 @@
-docker image rm -f customer-db
+docker image rm -f customer-db:local

@@ -1,1 +1,1 @@
-docker build -t catalog-event-service .
+docker build -t catalog-event-service:local .

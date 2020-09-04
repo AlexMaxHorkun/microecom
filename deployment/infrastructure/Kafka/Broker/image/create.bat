@@ -1,1 +1,1 @@
-docker build -t kafka-broker .
+docker build -t kafka-broker:local .

@@ -1,1 +1,1 @@
-docker image rm -f inventory-db
+docker image rm -f inventory-db:local

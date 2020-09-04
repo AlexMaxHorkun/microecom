@@ -1,1 +1,1 @@
-docker image rm -f auth-service
+docker image rm -f auth-service:local

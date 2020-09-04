@@ -1,1 +1,1 @@
-docker image rm -f catalog-http-service
+docker image rm -f catalog-http-service:local

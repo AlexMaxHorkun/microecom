@@ -1,1 +1,1 @@
-docker image rm -f inventory-http-service
+docker image rm -f inventory-http-service:local

@@ -1,0 +1,67 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: catalog-http-service-virtual
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - microecom-gateway
+  http:
+    - name: "catalog-rest-v1-routes"
+      match:
+        - uri:
+            prefix: /rest/V1/product
+        - uri:
+            prefix: /rest/V1/category
+      route:
+        - destination:
+            host: catalog-http-service-service
+            port:
+              number: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-http-service-deployment
+  labels:
+    app: catalog-http-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-http-service
+  template:
+    metadata:
+      labels:
+        app: catalog-http-service
+    spec:
+      containers:
+        - name: catalog-http-service-container-kube
+          image: catalog-http-service:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: debug
+              containerPort: 5007
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-http-service-service
+  labels:
+    run: catalog-http-service-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8082
+      protocol: TCP
+      name: http
+      targetPort: 8080
+    - port: 5007
+      protocol: TCP
+      name: debug
+      targetPort: 5007
+  selector:
+    app: catalog-http-service

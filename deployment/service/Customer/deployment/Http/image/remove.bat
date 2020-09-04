@@ -1,1 +1,1 @@
-docker image rm -f customer-http-service
+docker image rm -f customer-http-service:local

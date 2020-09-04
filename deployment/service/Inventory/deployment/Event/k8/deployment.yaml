@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: inventory-event-service-container-kube
-          image: inventory-event-service:latest
+          image: inventory-event-service:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: debug

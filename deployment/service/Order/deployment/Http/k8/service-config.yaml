@@ -1,0 +1,65 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: order-http-service-virtual
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - microecom-gateway
+  http:
+    - name: "order-rest-v1-routes"
+      match:
+        - uri:
+            prefix: /rest/V1/order
+      route:
+        - destination:
+            host: order-http-service-service
+            port:
+              number: 8085
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-http-service-deployment
+  labels:
+    app: order-http-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-http-service
+  template:
+    metadata:
+      labels:
+        app: order-http-service
+    spec:
+      containers:
+        - name: order-http-service-container-kube
+          image: order-http-service:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: debug
+              containerPort: 5012
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-http-service-service
+  labels:
+    run: order-http-service-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8085
+      protocol: TCP
+      name: http
+      targetPort: 8080
+    - port: 5012
+      protocol: TCP
+      name: debug
+      targetPort: 5012
+  selector:
+    app: order-http-service

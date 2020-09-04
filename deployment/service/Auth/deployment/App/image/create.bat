@@ -1,1 +1,1 @@
-docker build -t auth-service .
+docker build -t auth-service:local .

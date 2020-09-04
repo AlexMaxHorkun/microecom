@@ -1,1 +1,1 @@
-docker image rm -f order-http-service
+docker image rm -f order-http-service:local

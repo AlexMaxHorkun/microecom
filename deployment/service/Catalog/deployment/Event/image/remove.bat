@@ -1,1 +1,1 @@
-docker image rm -f catalog-event-service
+docker image rm -f catalog-event-service:local

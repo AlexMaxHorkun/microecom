@@ -1,1 +1,1 @@
-docker build -t order-http-service .
+docker build -t order-http-service:local .

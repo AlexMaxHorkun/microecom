@@ -1,1 +1,1 @@
-docker build -t order-event-service .
+docker build -t order-event-service:local .

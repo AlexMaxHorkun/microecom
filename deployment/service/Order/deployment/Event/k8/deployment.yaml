@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: order-event-service-container-kube
-          image: order-event-service:latest
+          image: order-event-service:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: debug

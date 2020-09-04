@@ -1,1 +1,1 @@
-docker image rm -f payment-db
+docker image rm -f payment-db:local

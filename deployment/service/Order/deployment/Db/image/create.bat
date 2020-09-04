@@ -1,1 +1,1 @@
-docker build -t order-db .
+docker build -t order-db:local .

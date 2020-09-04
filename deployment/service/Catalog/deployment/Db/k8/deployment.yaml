@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: catalog-db-container-kube
-          image: catalog-db:latest
+          image: catalog-db:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: pgsql

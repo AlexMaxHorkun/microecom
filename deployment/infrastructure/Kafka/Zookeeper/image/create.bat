@@ -1,1 +1,1 @@
-docker build -t kafka-zookeeper .
+docker build -t kafka-zookeeper:local .

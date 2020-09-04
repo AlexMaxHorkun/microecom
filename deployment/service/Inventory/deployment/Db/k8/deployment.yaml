@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: inventory-db-container-kube
-          image: inventory-db:latest
+          image: inventory-db:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: pgsql

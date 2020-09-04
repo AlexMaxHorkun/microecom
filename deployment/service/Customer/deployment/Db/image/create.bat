@@ -1,1 +1,1 @@
-docker build -t customer-db .
+docker build -t customer-db:local .

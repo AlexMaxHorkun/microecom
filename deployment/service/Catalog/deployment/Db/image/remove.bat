@@ -1,1 +1,1 @@
-docker image rm -f catalog-db
+docker image rm -f catalog-db:local

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: kafka-broker-container-kube
-          image: kafka-broker:latest
+          image: kafka-broker:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: kafkabroker

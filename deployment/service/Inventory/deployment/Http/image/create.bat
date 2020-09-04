@@ -1,1 +1,1 @@
-docker build -t inventory-http-service .
+docker build -t inventory-http-service:local .

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: auth-db-container-kube
-          image: auth-db:latest
+          image: auth-db:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: pgsql

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: customer-db-container-kube
-          image: customer-db:latest
+          image: customer-db:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: pgsql

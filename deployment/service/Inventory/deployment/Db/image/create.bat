@@ -1,1 +1,1 @@
-docker build -t inventory-db .
+docker build -t inventory-db:local .

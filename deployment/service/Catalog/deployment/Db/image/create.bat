@@ -1,1 +1,1 @@
-docker build -t catalog-db .
+docker build -t catalog-db:local .

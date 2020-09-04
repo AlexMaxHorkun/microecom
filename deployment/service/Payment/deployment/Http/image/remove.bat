@@ -1,1 +1,1 @@
-docker image rm -f payment-http-service
+docker image rm -f payment-http-service:local

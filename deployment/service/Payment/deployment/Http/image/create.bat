@@ -1,1 +1,1 @@
-docker build -t payment-http-service .
+docker build -t payment-http-service:local .

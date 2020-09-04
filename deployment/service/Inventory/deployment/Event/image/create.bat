@@ -1,1 +1,1 @@
-docker build -t inventory-event-service .
+docker build -t inventory-event-service:local .

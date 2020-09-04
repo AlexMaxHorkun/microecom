@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: catalog-event-service-container-kube
-          image: catalog-event-service:latest
+          image: catalog-event-service:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: debug

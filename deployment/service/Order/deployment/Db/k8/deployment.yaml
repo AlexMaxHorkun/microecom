@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: order-db-container-kube
-          image: order-db:latest
+          image: order-db:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: pgsql

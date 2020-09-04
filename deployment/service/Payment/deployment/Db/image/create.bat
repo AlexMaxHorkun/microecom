@@ -1,1 +1,1 @@
-docker build -t payment-db .
+docker build -t payment-db:local .
