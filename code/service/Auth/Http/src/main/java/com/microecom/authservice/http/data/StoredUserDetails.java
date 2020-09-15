@@ -1,4 +1,4 @@
-package com.microecom.authservice;
+package com.microecom.authservice.http.data;
 
 import com.microecom.authservice.model.data.UserWithCredentials;
 import org.springframework.security.core.GrantedAuthority;

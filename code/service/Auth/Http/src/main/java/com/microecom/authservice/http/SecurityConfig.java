@@ -1,5 +1,6 @@
-package com.microecom.authservice;
+package com.microecom.authservice.http;
 
+import com.microecom.authservice.http.model.UserDetailsRetriever;
 import com.microecom.authservice.model.DefaultPasswordEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

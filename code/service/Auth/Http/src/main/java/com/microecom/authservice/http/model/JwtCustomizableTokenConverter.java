@@ -1,4 +1,4 @@
-package com.microecom.authservice;
+package com.microecom.authservice.http.model;
 
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.RsaSigner;

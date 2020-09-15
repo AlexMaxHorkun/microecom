@@ -1,4 +1,4 @@
-package com.microecom.authservice;
+package com.microecom.authservice.http.controller;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import org.springframework.beans.factory.annotation.Autowired;

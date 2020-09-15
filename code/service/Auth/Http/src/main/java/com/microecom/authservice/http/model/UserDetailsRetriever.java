@@ -1,5 +1,6 @@
-package com.microecom.authservice;
+package com.microecom.authservice.http.model;
 
+import com.microecom.authservice.http.data.StoredUserDetails;
 import com.microecom.authservice.model.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
