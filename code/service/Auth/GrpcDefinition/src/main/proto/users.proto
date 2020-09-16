@@ -1,0 +1,38 @@
+syntax = "proto3";
+option java_package = "com.microecom.authservice.grpc.definition";
+
+message NewLocalUser {
+  string login = 1;
+  string password = 2;
+}
+
+message User {
+  string id = 1;
+  int64 created_timestamp = 2;
+}
+
+message LocalUser {
+  User user_data = 1;
+  string login = 2;
+}
+
+message SearchById {
+  string id = 1;
+}
+
+message LocalUserUpdate {
+  string id = 1;
+  string password = 2;
+}
+
+message DeletedResult {}
+
+service UserManager {
+  rpc createLocal(NewLocalUser) returns (LocalUser);
+
+  rpc find(SearchById) returns (User);
+
+  rpc updateLocal(LocalUserUpdate) returns (User);
+
+  rpc delete (SearchById) returns (DeletedResult);
+}
