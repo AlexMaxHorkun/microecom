@@ -5,58 +5,45 @@ metadata:
 spec:
   hosts:
     - "*"
+    - "http.auth-service.microecom"
   gateways:
     - microecom-gateway
   http:
-    - name: "rest-v1-routes"
+    - name: "auth-service-routes"
       match:
         - uri:
             prefix: /rest/V1/user
+        - uri:
+            exact: /.well-known/jwks.json
       route:
         - destination:
-            host: auth-service
+            host: auth-service-http
             port:
               number: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service-deployment
+  name: auth-http-service-deployment
   labels:
-    app: auth-service
+    app: auth-http-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth-service
+      app: auth-http-service
   template:
     metadata:
       labels:
-        app: auth-service
+        app: auth-http-service
     spec:
       containers:
-        - name: auth-service-container-kube
-          image: auth-service:local
+        - name: auth-http-service-container-kube
+          image: auth-http-service:local
           imagePullPolicy: IfNotPresent
           ports:
-            - name: grpc
-              containerPort: 8082
             - name: http
               containerPort: 8080
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: auth-service-grpc
-spec:
-  type: ClusterIP
-  ports:
-    - port: 8080
-      protocol: TCP
-      name: grpc
-      targetPort: 8082
-  selector:
-    app: auth-service
 ---
 apiVersion: v1
 kind: Service
@@ -70,4 +57,4 @@ spec:
       name: http
       targetPort: 8080
   selector:
-    app: auth-service
+    app: auth-http-service

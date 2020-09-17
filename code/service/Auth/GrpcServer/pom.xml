@@ -9,13 +9,6 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <build>
-        <extensions>
-            <extension>
-                <groupId>kr.motd.maven</groupId>
-                <artifactId>os-maven-plugin</artifactId>
-                <version>1.6.2</version>
-            </extension>
-        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -29,28 +22,10 @@
                     <target>14</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.xolstice.maven.plugins</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
-                <configuration>
-                    <protocArtifact>com.google.protobuf:protoc:3.12.0:exe:${os.detected.classifier}</protocArtifact>
-                    <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.32.1:exe:${os.detected.classifier}</pluginArtifact>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>compile-custom</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
-    <groupId>com.microecom.authservice.grpc</groupId>
-    <artifactId>server</artifactId>
+    <groupId>com.microecom.authservice</groupId>
+    <artifactId>grpc-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Auth Service | GRPC Server</name>
     <description>Auth service GRPC server</description>
@@ -89,8 +64,8 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.microecom.authservice.grpc</groupId>
-            <artifactId>definition</artifactId>
+            <groupId>com.microecom.authservice</groupId>
+            <artifactId>grpc-definition</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

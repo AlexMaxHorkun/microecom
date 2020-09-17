@@ -1,0 +1,1 @@
+remove.bat & cd image & remove.bat & copy /Y "..\..\..\..\..\..\code\service\Auth\Http\target\http-service-0.0.1-SNAPSHOT.jar" "resource/http-service-0.0.1-SNAPSHOT.jar" && create.bat && cd .. && create.bat

@@ -31,8 +31,8 @@
             </plugin>
         </plugins>
     </build>
-    <groupId>com.microecom.authservice.grpc</groupId>
-    <artifactId>definition</artifactId>
+    <groupId>com.microecom.authservice</groupId>
+    <artifactId>grpc-definition</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Auth Service | GRPC Definition</name>
     <description>Auth service GRPC Definition</description>

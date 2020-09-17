@@ -4,6 +4,8 @@ import com.microecom.authservice.model.data.NewUserWithCredentials;
 import com.microecom.authservice.model.data.User;
 import com.microecom.authservice.model.data.UserWithCredentials;
 import com.microecom.authservice.model.data.UserWithCredentialsUpdate;
+import com.microecom.authservice.model.exception.InvalidUserDataException;
+
 import java.util.Optional;
 
 /**
@@ -13,11 +15,11 @@ public interface UserManager {
     /**
      * Create new user with a login and a password, idempotent.
      */
-    User create(NewUserWithCredentials user);
+    User create(NewUserWithCredentials user) throws InvalidUserDataException;
 
     Optional<User> findById(String id);
 
-    User update(UserWithCredentialsUpdate update);
+    User update(UserWithCredentialsUpdate update) throws InvalidUserDataException;
 
     /**
      * Delete a user record alongside with any authentication data.
