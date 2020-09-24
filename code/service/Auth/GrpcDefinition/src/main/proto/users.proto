@@ -9,11 +9,13 @@ message NewLocalUser {
 message User {
   string id = 1;
   int64 created_timestamp = 2;
+  oneof auth_data {
+    LocalUserData local = 3;
+  }
 }
 
-message LocalUser {
-  User user_data = 1;
-  string login = 2;
+message LocalUserData {
+  string login = 1;
 }
 
 message SearchById {
@@ -28,7 +30,7 @@ message LocalUserUpdate {
 message DeletedResult {}
 
 service UserManager {
-  rpc createLocal(NewLocalUser) returns (LocalUser);
+  rpc createLocal(NewLocalUser) returns (User);
 
   rpc find(SearchById) returns (User);
 
