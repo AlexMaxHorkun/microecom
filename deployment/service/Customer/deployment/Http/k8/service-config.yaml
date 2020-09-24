@@ -5,6 +5,7 @@ metadata:
 spec:
   hosts:
     - "*"
+    - "http.customer-service.microecom"
   gateways:
     - microecom-gateway
   http:
@@ -59,9 +60,5 @@ spec:
       protocol: TCP
       name: http
       targetPort: 8080
-    - port: 5006
-      protocol: TCP
-      name: debug
-      targetPort: 5006
   selector:
     app: customer-http-service
