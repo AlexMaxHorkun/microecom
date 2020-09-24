@@ -100,7 +100,6 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
         var violations = validator.validate(input);
         if (!violations.isEmpty()) {
             response.onError(new ConstraintViolationException(violations));
-            response.onCompleted();
 
             return false;
         }

@@ -48,7 +48,7 @@ public class GrpcAuthClient implements AuthClient {
             );
         } catch (StatusRuntimeException ex) {
             if (ex.getStatus().getCode() == Status.Code.UNKNOWN) {
-                throw new IllegalArgumentException(ex.getMessage());
+                throw new IllegalArgumentException(ex.getLocalizedMessage());
             } else {
                 throw ex;
             }
