@@ -25,7 +25,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: grpc.auth-service.microecom
+  name: grpc-auth
 spec:
   type: ClusterIP
   ports:

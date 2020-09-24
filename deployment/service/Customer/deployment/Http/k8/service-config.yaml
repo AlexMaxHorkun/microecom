@@ -5,7 +5,6 @@ metadata:
 spec:
   hosts:
     - "*"
-    - "http.customer-service.microecom"
   gateways:
     - microecom-gateway
   http:

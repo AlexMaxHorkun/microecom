@@ -5,7 +5,6 @@ metadata:
 spec:
   hosts:
     - "*"
-    - "http.auth-service.microecom"
   gateways:
     - microecom-gateway
   http:
@@ -28,7 +27,7 @@ metadata:
   labels:
     app: auth-http-service
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: auth-http-service
@@ -48,9 +47,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service-http
+  name: http-auth
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - port: 8080
       protocol: TCP
