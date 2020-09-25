@@ -2,6 +2,8 @@ package com.microecom.customerservice.model;
 
 import com.microecom.customerservice.model.data.CustomerUpdate;
 import com.microecom.customerservice.model.data.ExistingCustomer;
+import com.microecom.customerservice.model.exception.InvalidCustomerDataException;
+import com.microecom.customerservice.model.exception.NotFoundException;
 
 import java.util.Optional;
 
@@ -13,7 +15,7 @@ public interface CustomerManager {
 
     Optional<ExistingCustomer> findById(String id);
 
-    ExistingCustomer update(CustomerUpdate update) throws IllegalArgumentException;
+    ExistingCustomer update(CustomerUpdate update) throws InvalidCustomerDataException, NotFoundException;
 
-    void delete(String id) throws IllegalArgumentException;
+    void delete(String id);
 }

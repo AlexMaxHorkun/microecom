@@ -4,15 +4,16 @@ import com.microecom.authservice.grpc.definition.UserManagerGrpc;
 import com.microecom.authservice.grpc.definition.Users;
 import com.microecom.customerservice.model.client.data.NewUser;
 import com.microecom.customerservice.model.client.data.User;
+import com.microecom.customerservice.model.client.exception.InvalidUserDataException;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class GrpcAuthClient implements AuthClient {
@@ -29,28 +30,23 @@ public class GrpcAuthClient implements AuthClient {
     }
 
     @Override
-    public User create(NewUser user) throws IllegalArgumentException {
+    public User create(NewUser user) throws InvalidUserDataException {
         var channel = openChannel();
         var userManagerService = UserManagerGrpc.newBlockingStub(channel);
 
         try {
-            var created = userManagerService.createLocal(
-                    Users.NewLocalUser.newBuilder()
-                            .setLogin(user.getLogin())
-                            .setPassword(user.getPassword())
-                            .build()
+            var result = userManagerService.createLocal(
+                    Users.NewLocalUserArg.newBuilder().setLogin(user.getLogin()).setPassword(user.getPassword()).build()
             );
 
-            return new User(
-                    created.getLocal().getLogin(),
-                    created.getId(),
-                    Instant.ofEpochSecond(created.getCreatedTimestamp())
-            );
-        } catch (StatusRuntimeException ex) {
-            if (ex.getStatus().getCode() == Status.Code.UNKNOWN) {
-                throw new IllegalArgumentException(ex.getLocalizedMessage());
+            if (result.getResultCase() == Users.UpdatedUserResult.ResultCase.UPDATED) {
+                return new User(
+                        result.getUpdated().getLocal().getLogin(),
+                        result.getUpdated().getId(),
+                        Instant.ofEpochSecond(result.getUpdated().getCreatedTimestamp())
+                );
             } else {
-                throw ex;
+                throw createUserDataException(result);
             }
         } finally {
             channel.shutdown();
@@ -63,24 +59,30 @@ public class GrpcAuthClient implements AuthClient {
         var userManagerService = UserManagerGrpc.newBlockingStub(channel);
 
         try {
-            var found = userManagerService.find(Users.SearchById.newBuilder().setId(id).build());
-            String login;
-            if (found.getAuthDataCase().equals(Users.User.AuthDataCase.LOCAL)) {
-                return Optional.of(
-                        new User(
-                                found.getLocal().getLogin(),
-                                found.getId(),
-                                Instant.ofEpochSecond(found.getCreatedTimestamp())
-                        )
-                );
+            var found = userManagerService.find(Users.IdArg.newBuilder().setId(id).build());
+            if (found.hasUser()) {
+                //User was found
+                if (found.getUser().hasLocal()) {
+                    //User with credentials found
+                    return Optional.of(
+                            new User(
+                                    found.getUser().getLocal().getLogin(),
+                                    found.getUser().getId(),
+                                    Instant.ofEpochSecond(found.getUser().getCreatedTimestamp())
+                            )
+                    );
+                } else {
+                    //User without credentials
+                    return Optional.of(
+                            new User(
+                                    found.getUser().getId(),
+                                    Instant.ofEpochSecond(found.getUser().getCreatedTimestamp())
+                            )
+                    );
+                }
             } else {
-                return Optional.of(new User(found.getId(), Instant.ofEpochSecond(found.getCreatedTimestamp())));
-            }
-        } catch (StatusRuntimeException ex) {
-            if (ex.getStatus().getCode() == Status.Code.UNKNOWN) {
+                //No user found.
                 return Optional.empty();
-            } else {
-                throw ex;
             }
         } finally {
             channel.shutdown();
@@ -93,7 +95,7 @@ public class GrpcAuthClient implements AuthClient {
         var userManagerService = UserManagerGrpc.newBlockingStub(channel);
 
         try {
-            userManagerService.delete(Users.SearchById.newBuilder().setId(id).build());
+            userManagerService.delete(Users.IdArg.newBuilder().setId(id).build());
         } finally {
             channel.shutdown();
         }
@@ -104,5 +106,20 @@ public class GrpcAuthClient implements AuthClient {
      */
     private ManagedChannel openChannel() {
         return ManagedChannelBuilder.forAddress(uri, port).usePlaintext().build();
+    }
+
+    private InvalidUserDataException createUserDataException(Users.UpdatedUserResult result) {
+        switch (result.getResultCase()) {
+            case INPUTERROR:
+                return new InvalidUserDataException(result.getInputError());
+            case CONSTRAINTVIOLATIONS:
+                var map = new HashMap<String, Set<String>>();
+                for (Users.Violation violation : result.getConstraintViolations().getViolationsList()) {
+                    map.put(violation.getField(), new HashSet<String>(violation.getMessagesList()));
+                }
+                return new InvalidUserDataException(map);
+            default:
+                throw new RuntimeException("Unknown UpdatedUserResult format");
+        }
     }
 }

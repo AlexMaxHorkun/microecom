@@ -3,6 +3,8 @@ package com.microecom.customerservice.model;
 import com.microecom.customerservice.model.client.AuthClient;
 import com.microecom.customerservice.model.data.CustomerUpdate;
 import com.microecom.customerservice.model.data.ExistingCustomer;
+import com.microecom.customerservice.model.exception.InvalidCustomerDataException;
+import com.microecom.customerservice.model.exception.NotFoundException;
 import com.microecom.customerservice.model.storage.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,30 +40,34 @@ public class CustomerManagerService implements CustomerManager {
     }
 
     @Override
-    public ExistingCustomer update(CustomerUpdate update) throws IllegalArgumentException {
+    public ExistingCustomer update(CustomerUpdate update) throws InvalidCustomerDataException, NotFoundException {
         if (update.getDefaultBillingAddress().isPresent()) {
             validateAddressLink(update.getForId(), update.getDefaultBillingAddress().get());
         }
         if (update.getDefaultShippingAddress().isPresent()) {
             validateAddressLink(update.getForId(), update.getDefaultShippingAddress().get());
         }
+
         return repo.update(update);
     }
 
     @Override
-    public void delete(String id) throws IllegalArgumentException {
+    public void delete(String id) {
         var customerFound = findById(id);
-        if (customerFound.isEmpty()) {
-            throw new IllegalArgumentException("Customer with given ID does not exist.");
+        if (customerFound.isPresent()) {
+            authClient.delete(customerFound.get().getUserId());
+            try {
+                repo.delete(id);
+            } catch (NotFoundException ex) {
+                //Possibly a duplicate request, continue.
+            }
         }
-        authClient.delete(customerFound.get().getUserId());
-        repo.delete(id);
     }
 
     private void validateAddressLink(String customerId, String addressId) throws IllegalArgumentException {
         var found = addresses.findById(addressId);
         if (found.isEmpty() || !found.get().getCustomerId().equals(customerId)) {
-            throw new IllegalArgumentException("Invalid address ID given");
+            throw new InvalidCustomerDataException("Invalid address ID given");
         }
     }
 }

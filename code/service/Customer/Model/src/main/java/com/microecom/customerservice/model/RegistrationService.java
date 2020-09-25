@@ -2,8 +2,10 @@ package com.microecom.customerservice.model;
 
 import com.microecom.customerservice.model.client.AuthClient;
 import com.microecom.customerservice.model.client.data.NewUser;
+import com.microecom.customerservice.model.client.exception.InvalidUserDataException;
 import com.microecom.customerservice.model.data.ExistingCustomer;
 import com.microecom.customerservice.model.data.SigningUp;
+import com.microecom.customerservice.model.exception.InvalidCustomerDataException;
 import com.microecom.customerservice.model.registration.data.NewCustomer;
 import com.microecom.customerservice.model.storage.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +23,24 @@ public class RegistrationService implements Registration {
     }
 
     @Override
-    public ExistingCustomer register(SigningUp newCustomer) throws IllegalArgumentException {
-        var user = authClient.create(new NewUser(newCustomer.getLogin(), newCustomer.getPassword()));
+    public ExistingCustomer register(SigningUp newCustomer) throws InvalidCustomerDataException {
+        try {
+            var user = authClient.create(new NewUser(newCustomer.getLogin(), newCustomer.getPassword()));
 
-        return repo.save(
-                new NewCustomer(
-                        newCustomer.getFirstName(),
-                        newCustomer.getLastName(),
-                        newCustomer.getEmail(),
-                        user.getId()
-                )
-        );
+            return repo.save(
+                    new NewCustomer(
+                            newCustomer.getFirstName(),
+                            newCustomer.getLastName(),
+                            newCustomer.getEmail(),
+                            user.getId()
+                    )
+            );
+        } catch (InvalidUserDataException ex) {
+            if (ex.getFieldViolations().isPresent()) {
+                throw new InvalidCustomerDataException(ex.getFieldViolations().get());
+            } else {
+                throw new InvalidCustomerDataException(ex.getMessage());
+            }
+        }
     }
 }

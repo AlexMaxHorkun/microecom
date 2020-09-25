@@ -3,13 +3,14 @@ package com.microecom.customerservice.model.storage;
 import com.microecom.customerservice.model.data.Customer;
 import com.microecom.customerservice.model.data.CustomerUpdate;
 import com.microecom.customerservice.model.data.ExistingCustomer;
+import com.microecom.customerservice.model.exception.InvalidCustomerDataException;
+import com.microecom.customerservice.model.exception.NotFoundException;
 import com.microecom.customerservice.model.storage.customer.CustomerCrudRepository;
 import com.microecom.customerservice.model.storage.customer.data.CustomerRow;
 import com.microecom.customerservice.model.storage.customer.data.Existing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -68,8 +69,12 @@ public class JpaCustomerRepository implements CustomerRepository {
     }
 
     @Override
-    public ExistingCustomer update(CustomerUpdate update) throws IllegalArgumentException {
-        var customer = repo.findById(UUID.fromString(update.getForId())).orElseThrow(IllegalArgumentException::new);
+    public ExistingCustomer update(CustomerUpdate update) throws InvalidCustomerDataException, NotFoundException {
+        var customerFound = repo.findById(UUID.fromString(update.getForId()));
+        if (customerFound.isEmpty()) {
+            throw new NotFoundException("Customer not found", update.getForId());
+        }
+        var customer = customerFound.get();
         if (update.getEmail().isPresent()) {
             customer.setEmail(update.getEmail().get());
         }
@@ -90,11 +95,11 @@ public class JpaCustomerRepository implements CustomerRepository {
     }
 
     @Override
-    public void delete(String id) throws IllegalArgumentException {
+    public void delete(String id) throws NotFoundException {
         try {
             repo.deleteById(UUID.fromString(id));
         } catch (EmptyResultDataAccessException exception) {
-            throw new IllegalArgumentException("Customer not found");
+            throw new NotFoundException("Customer not found", id);
         }
     }
 }

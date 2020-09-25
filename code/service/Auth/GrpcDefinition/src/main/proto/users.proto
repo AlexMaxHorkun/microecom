@@ -1,15 +1,11 @@
 syntax = "proto3";
 option java_package = "com.microecom.authservice.grpc.definition";
 
-message NewLocalUser {
-  string login = 1;
-  string password = 2;
-}
-
+// DTOs
 message User {
   string id = 1;
   int64 created_timestamp = 2;
-  oneof auth_data {
+  oneof local_auth {
     LocalUserData local = 3;
   }
 }
@@ -18,23 +14,58 @@ message LocalUserData {
   string login = 1;
 }
 
-message SearchById {
+message Violation {
+  string field = 1;
+  repeated string messages = 2;
+}
+
+message ConstraintViolations {
+  repeated Violation violations = 1;
+}
+
+
+// Arguments
+message NewLocalUserArg {
+  string login = 1;
+  string password = 2;
+}
+
+message IdArg {
   string id = 1;
 }
 
-message LocalUserUpdate {
+message LocalUserUpdateArg {
   string id = 1;
-  string password = 2;
+  oneof updated {
+    string password = 2;
+  }
+}
+
+// Results
+message UpdatedUserResult {
+  oneof result {
+    User updated = 1;
+    ConstraintViolations constraintViolations = 2;
+    string inputError = 3;
+  }
+}
+
+message FoundUserResult {
+  oneof found {
+    User user = 1;
+  }
 }
 
 message DeletedResult {}
 
+
+// Services
 service UserManager {
-  rpc createLocal(NewLocalUser) returns (User);
+  rpc createLocal(NewLocalUserArg) returns (UpdatedUserResult);
 
-  rpc find(SearchById) returns (User);
+  rpc find(IdArg) returns (FoundUserResult);
 
-  rpc updateLocal(LocalUserUpdate) returns (User);
+  rpc updateLocal(LocalUserUpdateArg) returns (UpdatedUserResult);
 
-  rpc delete (SearchById) returns (DeletedResult);
+  rpc delete (IdArg) returns (DeletedResult);
 }

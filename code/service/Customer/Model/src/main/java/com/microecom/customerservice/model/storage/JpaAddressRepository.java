@@ -3,6 +3,7 @@ package com.microecom.customerservice.model.storage;
 import com.microecom.customerservice.model.data.Address;
 import com.microecom.customerservice.model.data.AddressUpdate;
 import com.microecom.customerservice.model.data.ExistingAddress;
+import com.microecom.customerservice.model.exception.NotFoundException;
 import com.microecom.customerservice.model.storage.address.AddressCrudRepository;
 import com.microecom.customerservice.model.storage.address.data.AddressRow;
 import com.microecom.customerservice.model.storage.address.data.Existing;
@@ -95,11 +96,11 @@ public class JpaAddressRepository implements AddressRepository {
     }
 
     @Override
-    public void delete(String id) throws IllegalArgumentException {
+    public void delete(String id) throws NotFoundException {
         try {
             repo.deleteById(UUID.fromString(id));
         } catch (EmptyResultDataAccessException exception) {
-            throw new IllegalArgumentException("Address not found");
+            throw new NotFoundException("Address not found", id);
         }
     }
 

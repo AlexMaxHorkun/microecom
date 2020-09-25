@@ -2,10 +2,11 @@ package com.microecom.customerservice.model;
 
 import com.microecom.customerservice.model.data.ExistingCustomer;
 import com.microecom.customerservice.model.data.SigningUp;
+import com.microecom.customerservice.model.exception.InvalidCustomerDataException;
 
 /**
  * Registration service for users managed by customer service.
  */
 public interface Registration {
-    ExistingCustomer register(SigningUp newCustomer) throws IllegalArgumentException;
+    ExistingCustomer register(SigningUp newCustomer) throws InvalidCustomerDataException;
 }

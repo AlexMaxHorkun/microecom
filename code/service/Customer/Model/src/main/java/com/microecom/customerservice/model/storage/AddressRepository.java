@@ -3,6 +3,7 @@ package com.microecom.customerservice.model.storage;
 import com.microecom.customerservice.model.data.Address;
 import com.microecom.customerservice.model.data.AddressUpdate;
 import com.microecom.customerservice.model.data.ExistingAddress;
+import com.microecom.customerservice.model.exception.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +17,5 @@ public interface AddressRepository {
 
     ExistingAddress update(AddressUpdate update) throws IllegalArgumentException;
 
-    void delete(String id) throws IllegalArgumentException;
+    void delete(String id) throws NotFoundException;
 }
