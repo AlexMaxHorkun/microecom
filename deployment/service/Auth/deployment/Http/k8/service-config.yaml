@@ -14,11 +14,14 @@ spec:
             prefix: /rest/V1/user
         - uri:
             exact: /.well-known/jwks.json
+        - uri:
+            prefix: /oauth
       route:
         - destination:
-            host: auth-service-http
+            host: http-auth
             port:
               number: 8080
+              name: http
 ---
 apiVersion: apps/v1
 kind: Deployment

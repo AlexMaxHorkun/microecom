@@ -3,11 +3,15 @@ package com.microecom.customerservice.model.storage;
 import com.microecom.customerservice.model.data.Address;
 import com.microecom.customerservice.model.data.AddressUpdate;
 import com.microecom.customerservice.model.data.ExistingAddress;
+import com.microecom.customerservice.model.exception.InvalidAddressDataException;
 import com.microecom.customerservice.model.exception.NotFoundException;
 import com.microecom.customerservice.model.storage.address.AddressCrudRepository;
+import com.microecom.customerservice.model.storage.address.ComposedAddressRepository;
 import com.microecom.customerservice.model.storage.address.data.AddressRow;
 import com.microecom.customerservice.model.storage.address.data.Existing;
 import com.microecom.customerservice.model.storage.customer.CustomerCrudRepository;
+import com.microecom.customerservice.model.storage.data.AddressListCriteria;
+import com.microecom.customerservice.model.storage.data.MutableAddressListCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
@@ -19,11 +23,11 @@ import java.util.UUID;
 
 @Component
 public class JpaAddressRepository implements AddressRepository {
-    private final AddressCrudRepository repo;
+    private final ComposedAddressRepository repo;
 
     private final CustomerCrudRepository customerRepo;
 
-    public JpaAddressRepository(@Autowired AddressCrudRepository repo, @Autowired CustomerCrudRepository customerRepo) {
+    public JpaAddressRepository(@Autowired ComposedAddressRepository repo, @Autowired CustomerCrudRepository customerRepo) {
         this.repo = repo;
         this.customerRepo = customerRepo;
     }
@@ -38,7 +42,7 @@ public class JpaAddressRepository implements AddressRepository {
         }
         var customerFound = customerRepo.findById(UUID.fromString(newAddress.getCustomerId()));
         if (customerFound.isEmpty()) {
-            throw new IllegalArgumentException("Wrong customer link");
+            throw new InvalidAddressDataException("Wrong customer link");
         }
 
         return convertToExisting(
@@ -59,13 +63,18 @@ public class JpaAddressRepository implements AddressRepository {
     }
 
     @Override
-    public List<ExistingAddress> findByCustomerId(String id) throws IllegalArgumentException {
+    public List<ExistingAddress> findByCustomerId(String id) throws NotFoundException {
+        return findByCustomerId(id, new MutableAddressListCriteria());
+    }
+
+    @Override
+    public List<ExistingAddress> findByCustomerId(String id, AddressListCriteria criteria) throws NotFoundException {
         var customerFound = customerRepo.findById(UUID.fromString(id));
         if (customerFound.isEmpty()) {
-            throw new IllegalArgumentException("Invalid customer ID given");
+            throw new NotFoundException("Invalid customer ID given");
         }
 
-        var list = repo.findAllByCustomer_Id(UUID.fromString(id));
+        var list = repo.findByCustomerId(UUID.fromString(id), criteria);
         var result = new ArrayList<ExistingAddress>();
         for (AddressRow row : list) {
             result.add(convertToExisting(row));
@@ -75,10 +84,10 @@ public class JpaAddressRepository implements AddressRepository {
     }
 
     @Override
-    public ExistingAddress update(AddressUpdate update) throws IllegalArgumentException {
+    public ExistingAddress update(AddressUpdate update) throws InvalidAddressDataException {
         var existingRowFound = repo.findById(UUID.fromString(update.getForId()));
         if (existingRowFound.isEmpty()) {
-            throw new IllegalArgumentException("Address with given ID not found");
+            throw new InvalidAddressDataException("Address with given ID not found");
         }
         var row = existingRowFound.get();
 

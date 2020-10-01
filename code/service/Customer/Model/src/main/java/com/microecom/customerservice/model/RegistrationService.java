@@ -26,7 +26,13 @@ public class RegistrationService implements Registration {
     public ExistingCustomer register(SigningUp newCustomer) throws InvalidCustomerDataException {
         try {
             var user = authClient.create(new NewUser(newCustomer.getLogin(), newCustomer.getPassword()));
+            //User might've been already created if this is a duplicate request
+            var existing = repo.findByUserId(user.getId());
+            if (existing.isPresent()) {
+                return existing.get();
+            }
 
+            //Actually a new user
             return repo.save(
                     new NewCustomer(
                             newCustomer.getFirstName(),

@@ -41,13 +41,13 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
         if (violationsFound.isEmpty()) {
             try {
                 //Creating new user
-                UserWithCredentials user = (UserWithCredentials) userManager.create(newUser);
+                var user = userManager.create(newUser);
                 var result = Users.UpdatedUserResult.newBuilder()
                         .setUpdated(
                                 Users.User.newBuilder()
                                         .setId(user.getId())
                                         .setCreatedTimestamp(user.getCreated().toInstant().getEpochSecond())
-                                        .setLocal(Users.LocalUserData.newBuilder().setLogin(user.getLogin()).build())
+                                        .setLocal(Users.LocalUserData.newBuilder().setLogin(request.getLogin()).build())
                                         .build()
                         )
                         .build();

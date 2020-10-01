@@ -17,5 +17,8 @@ public interface CustomerManager {
 
     ExistingCustomer update(CustomerUpdate update) throws InvalidCustomerDataException, NotFoundException;
 
+    /**
+     * Must not fail when entity was not found for idempotency.
+     */
     void delete(String id);
 }

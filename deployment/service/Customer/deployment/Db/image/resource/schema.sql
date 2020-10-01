@@ -14,7 +14,8 @@ create table addresses (
     address_line text not null,
     address_line2 text,
     zip_code int not null,
-    customer_id uuid references customers(id) on update cascade on delete cascade
+    customer_id uuid references customers(id) on update cascade on delete cascade,
+    unique (customer_id, address_line, address_line2, zip_code)
 );
 
 alter table customers add constraint def_bil_ref foreign key (default_billing_id) references  addresses(id) on update cascade on delete set null;

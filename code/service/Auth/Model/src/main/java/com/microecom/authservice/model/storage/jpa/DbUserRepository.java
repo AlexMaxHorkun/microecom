@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,6 +33,7 @@ public class DbUserRepository implements UserRepository {
         this.credentialsRepo = credentialsRepo;
     }
 
+    @Transactional
     @Override
     public User create(NewUserWithCredentials user) {
         try {
@@ -54,6 +57,7 @@ public class DbUserRepository implements UserRepository {
         return returning;
     }
 
+    @Transactional
     @Override
     public void update(UserWithCredentials user) {
         var found = userRepo.findById(UUID.fromString(user.getId()));
@@ -65,6 +69,7 @@ public class DbUserRepository implements UserRepository {
         credentialsRepo.save(credentials);
     }
 
+    @Transactional
     @Override
     public void delete(String id) throws IllegalArgumentException {
         try {
@@ -72,6 +77,28 @@ public class DbUserRepository implements UserRepository {
         } catch (EmptyResultDataAccessException exception) {
             throw new NotFoundException("User with given ID was not found");
         }
+    }
+
+    @Override
+    public Optional<User> fetchSensitiveById(String id) {
+        Optional<UserRow> found = userRepo.findById(UUID.fromString(id));
+        Optional<User> returning = Optional.empty();
+        if (found.isPresent()) {
+            returning = Optional.of(createUserSensitiveReadDTO(found.get()));
+        }
+
+        return returning;
+    }
+
+    @Override
+    public Optional<UserWithCredentials> findByLogin(String login) {
+        Optional<UserWithCredentials> result = Optional.empty();
+        var found = credentialsRepo.findByLogin(login);
+        if (found.isPresent()) {
+            result = Optional.of((UserWithCredentials)createUserSensitiveReadDTO(found.get().getUser()));
+        }
+
+        return result;
     }
 
     private User createUserReadDTO(UserRow userRow) {
@@ -97,27 +124,5 @@ public class DbUserRepository implements UserRepository {
         } else {
             return new UserData(userRow.getId().toString(), userRow.getCreated());
         }
-    }
-
-    @Override
-    public Optional<User> fetchSensitiveById(String id) {
-        Optional<UserRow> found = userRepo.findById(UUID.fromString(id));
-        Optional<User> returning = Optional.empty();
-        if (found.isPresent()) {
-            returning = Optional.of(createUserSensitiveReadDTO(found.get()));
-        }
-
-        return returning;
-    }
-
-    @Override
-    public Optional<UserWithCredentials> findByLogin(String login) {
-        Optional<UserWithCredentials> result = Optional.empty();
-        var found = credentialsRepo.findByLogin(login);
-        if (found.isPresent()) {
-            result = Optional.of((UserWithCredentials)createUserSensitiveReadDTO(found.get().getUser()));
-        }
-
-        return result;
     }
 }

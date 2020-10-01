@@ -7,6 +7,8 @@ import com.microecom.authservice.model.storage.exception.NotUniqueException;
 import com.microecom.authservice.model.storage.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 /**
@@ -23,6 +25,7 @@ public class DefaultUserManager implements UserManager {
         this.passwordEncryptor = passwordEncryptor;
     }
 
+    @Transactional
     @Override
     public User create(NewUserWithCredentials user) {
         var newUser = new NewUserData(
@@ -52,6 +55,7 @@ public class DefaultUserManager implements UserManager {
         return userRepo.fetchById(id);
     }
 
+    @Transactional
     @Override
     public User update(UserWithCredentialsUpdate update) {
         var found = userRepo.fetchSensitiveById(update.getUserId());
@@ -83,6 +87,7 @@ public class DefaultUserManager implements UserManager {
         }
     }
 
+    @Transactional
     @Override
     public void delete(String id) {
         try {
