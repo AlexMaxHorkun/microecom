@@ -2,14 +2,17 @@ package com.microecom.authservice.http;
 
 import com.microecom.authservice.http.model.CustomTokenEnchancer;
 import com.microecom.authservice.http.model.JwtCustomizableTokenConverter;
+import com.microecom.authservice.model.DefaultPasswordEncryptor;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -30,12 +33,25 @@ import java.util.List;
 public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     private final AuthenticationConfiguration auth;
 
+    private final DefaultPasswordEncryptor passwordEncryptor;
+
     private KeyPair keyPair;
 
     public AuthServerConfig(
-            AuthenticationConfiguration auth
+            AuthenticationConfiguration auth,
+            @Autowired DefaultPasswordEncryptor passwordEncryptor
     ) {
         this.auth = auth;
+        this.passwordEncryptor = passwordEncryptor;
+    }
+
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+                .withClient("client")
+                .secret(passwordEncryptor.encrypt("secret"))
+                .authorizedGrantTypes("password", "refresh_token")
+                .scopes("all");
     }
 
     @Override

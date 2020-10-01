@@ -41,7 +41,7 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
         if (violationsFound.isEmpty()) {
             try {
                 //Creating new user
-                var user = userManager.create(newUser);
+                UserWithCredentials user = (UserWithCredentials) userManager.create(newUser);
                 var result = Users.UpdatedUserResult.newBuilder()
                         .setUpdated(
                                 Users.User.newBuilder()
