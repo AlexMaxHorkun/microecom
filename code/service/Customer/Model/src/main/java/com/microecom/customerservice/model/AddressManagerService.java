@@ -24,7 +24,7 @@ public class AddressManagerService implements AddressManager {
     public ExistingAddress create(Address newAddress) throws InvalidAddressDataException {
         //Have to check if the exact same address exist in case of a duplicate request
         var criteria = new MutableAddressListCriteria();
-        criteria.setAddressLine2Eq(newAddress.getAddressLine());
+        criteria.setAddressLineEq(newAddress.getAddressLine());
         criteria.setZipCodeEq(newAddress.getZipCode());
         if (newAddress.getAddressLine2().isPresent()) {
             criteria.setAddressLine2Eq(newAddress.getAddressLine2().get());
