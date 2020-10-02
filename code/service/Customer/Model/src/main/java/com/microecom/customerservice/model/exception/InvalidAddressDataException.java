@@ -12,6 +12,6 @@ public class InvalidAddressDataException extends InvalidInputDataException {
     }
 
     public InvalidAddressDataException(Map<String, Set<String>> fieldViolations) {
-        super(fieldViolations);
+        super("Invalid address data provided", "address", fieldViolations);
     }
 }

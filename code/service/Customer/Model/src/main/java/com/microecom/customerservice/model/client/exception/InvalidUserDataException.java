@@ -14,6 +14,6 @@ public class InvalidUserDataException extends InvalidInputDataException {
     }
 
     public InvalidUserDataException(Map<String, Set<String>> fieldViolations) {
-        super(fieldViolations);
+        super("Invalid user data provided", "user", fieldViolations);
     }
 }

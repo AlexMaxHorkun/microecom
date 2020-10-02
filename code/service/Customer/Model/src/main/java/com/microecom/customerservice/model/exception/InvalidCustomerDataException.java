@@ -1,7 +1,6 @@
 package com.microecom.customerservice.model.exception;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -13,6 +12,6 @@ public class InvalidCustomerDataException extends InvalidInputDataException {
     }
 
     public InvalidCustomerDataException(Map<String, Set<String>> fieldViolations) {
-        super(fieldViolations);
+        super("Invalid customer data provided", "customer", fieldViolations);
     }
 }
