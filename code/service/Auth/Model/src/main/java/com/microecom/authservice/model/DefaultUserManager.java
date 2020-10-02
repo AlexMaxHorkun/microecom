@@ -25,7 +25,6 @@ public class DefaultUserManager implements UserManager {
         this.passwordEncryptor = passwordEncryptor;
     }
 
-    @Transactional
     @Override
     public User create(NewUserWithCredentials user) {
         var newUser = new NewUserData(
@@ -87,7 +86,6 @@ public class DefaultUserManager implements UserManager {
         }
     }
 
-    @Transactional
     @Override
     public void delete(String id) {
         try {

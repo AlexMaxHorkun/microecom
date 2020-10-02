@@ -38,6 +38,9 @@ public class DbUserRepository implements UserRepository {
     public User create(NewUserWithCredentials user) {
         try {
             UserRow saved = userRepo.save(new UserRow(user.getCreated().toInstant()));
+            if (credentialsRepo.findByLogin(user.getLogin()).isPresent()) {
+                throw new NotUniqueException("Login is not unique");
+            }
             var savedAuth = new CredentialsAuthRow(saved, user.getLogin(), user.getPassword());
             savedAuth = credentialsRepo.save(savedAuth);
             saved.setCredentialsAuthRow(savedAuth);

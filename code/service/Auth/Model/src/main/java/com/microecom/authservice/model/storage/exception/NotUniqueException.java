@@ -8,4 +8,8 @@ public class NotUniqueException extends RuntimeException {
     public NotUniqueException(Throwable cause) {
         super("New record data is not unique", cause);
     }
+
+    public NotUniqueException(String message) {
+        super(message);
+    }
 }

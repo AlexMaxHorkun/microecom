@@ -16,9 +16,9 @@ spec:
             prefix: /rest/V1/customer
       route:
         - destination:
-            host: customer-http-service-service
+            host: http-customer
             port:
-              number: 8081
+              number: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -49,9 +49,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: customer-http-service-service
-  labels:
-    run: customer-http-service-service
+  name: http-customer
 spec:
   type: LoadBalancer
   ports:
