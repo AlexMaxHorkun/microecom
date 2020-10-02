@@ -38,7 +38,9 @@ public class DbUserRepository implements UserRepository {
     public User create(NewUserWithCredentials user) {
         try {
             UserRow saved = userRepo.save(new UserRow(user.getCreated().toInstant()));
-            credentialsRepo.save(new CredentialsAuthRow(saved, user.getLogin(), user.getPassword()));
+            var savedAuth = new CredentialsAuthRow(saved, user.getLogin(), user.getPassword());
+            savedAuth = credentialsRepo.save(savedAuth);
+            saved.setCredentialsAuthRow(savedAuth);
 
             return createUserReadDTO(saved);
         } catch (DataIntegrityViolationException ex) {

@@ -36,9 +36,10 @@ public class UserRow {
     }
 
     public Optional<CredentialsAuthRow> getCredentialsAuthRow() {
-        if (credentialsAuthRow != null)
-            return Optional.of(credentialsAuthRow);
-        else
-            return Optional.empty();
+        return Optional.ofNullable(credentialsAuthRow);
+    }
+
+    public void setCredentialsAuthRow(CredentialsAuthRow credentialsAuthRow) {
+        this.credentialsAuthRow = credentialsAuthRow;
     }
 }

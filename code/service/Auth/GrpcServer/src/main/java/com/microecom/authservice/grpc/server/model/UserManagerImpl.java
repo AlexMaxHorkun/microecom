@@ -5,7 +5,7 @@ import com.microecom.authservice.grpc.definition.Users;
 import com.microecom.authservice.grpc.server.model.data.LocalUserUpdate;
 import com.microecom.authservice.grpc.server.model.data.NewLocalUser;
 import com.microecom.authservice.model.UserManager;
-import com.microecom.authservice.model.data.UserWithCredentials;
+import com.microecom.authservice.model.data.UserWithLogin;
 import com.microecom.authservice.model.exception.InvalidUserDataException;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -41,13 +40,17 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
         if (violationsFound.isEmpty()) {
             try {
                 //Creating new user
-                UserWithCredentials user = (UserWithCredentials) userManager.create(newUser);
+                var user = userManager.create(newUser);
                 var result = Users.UpdatedUserResult.newBuilder()
                         .setUpdated(
                                 Users.User.newBuilder()
                                         .setId(user.getId())
                                         .setCreatedTimestamp(user.getCreated().toInstant().getEpochSecond())
-                                        .setLocal(Users.LocalUserData.newBuilder().setLogin(request.getLogin()).build())
+                                        .setLocal(
+                                                Users.LocalUserData.newBuilder()
+                                                        .setLogin(((UserWithLogin) user).getLogin())
+                                                        .build()
+                                        )
                                         .build()
                         )
                         .build();
@@ -76,10 +79,10 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
             var userBuilder = Users.User.newBuilder()
                     .setId(found.get().getId())
                     .setCreatedTimestamp(found.get().getCreated().toInstant().getEpochSecond());
-            if (found.get() instanceof UserWithCredentials) {
+            if (found.get() instanceof UserWithLogin) {
                 userBuilder.setLocal(
                         Users.LocalUserData.newBuilder()
-                                .setLogin(((UserWithCredentials) found.get()).getLogin())
+                                .setLogin(((UserWithLogin) found.get()).getLogin())
                                 .build()
                 );
             }
@@ -102,7 +105,7 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
         var violations = validate(update);
         if (violations.isEmpty()) {
             try {
-                UserWithCredentials updated = (UserWithCredentials) userManager.update(update);
+                var updated = userManager.update(update);
                 responseObserver.onNext(
                         Users.UpdatedUserResult.newBuilder()
                                 .setUpdated(
@@ -111,7 +114,7 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
                                                 .setCreatedTimestamp(updated.getCreated().toInstant().getEpochSecond())
                                                 .setLocal(
                                                         Users.LocalUserData.newBuilder()
-                                                                .setLogin(updated.getLogin())
+                                                                .setLogin(((UserWithLogin) updated).getLogin())
                                                                 .build()
                                                 )
                                                 .build()
