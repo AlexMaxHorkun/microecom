@@ -2,10 +2,7 @@ package com.microecom.customerservice.http.controller.data;
 
 import com.microecom.customerservice.model.data.SigningUp;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Optional;
 
 /**
@@ -31,27 +28,42 @@ public class NewCustomer implements SigningUp {
     }
 
     @Override
-    public @NotNull @NotBlank @Size(min = 5, max = 255) String getLogin() {
+    @Size(min = 5, max = 255, message = "Login must be between {min} and {max} characters long")
+    @NotNull(message = "Login cannot be empty")
+    @Pattern(
+            regexp = "^[A-z0-9_\\-]+$",
+            message = "Login can only contain alphanumerical characters plus \"-\" and \"_\""
+    )
+    public String getLogin() {
         return login;
     }
 
     @Override
-    public @NotNull @NotBlank @Size(min = 5, max = 255) String getPassword() {
+    @NotNull(message = "Password cannot be empty")
+    @Size(min = 8, max = 255, message = "Password must be between {min} and {max} characters long")
+    public String getPassword() {
         return password;
     }
 
     @Override
-    public @NotNull @NotBlank @Size(min = 5, max = 255) String getFirstName() {
+    @NotNull(message = "First name cannot be empty")
+    @Pattern(regexp = "^[A-z\\.]{2,125}$", message = "First name must be between 2 and 125 alpha characters")
+    public String getFirstName() {
         return firstName;
     }
 
     @Override
-    public @NotNull @NotBlank @Size(min = 5, max = 255) String getLastName() {
+    @NotNull(message = "Last name cannot be empty")
+    @Pattern(regexp = "^[A-z\\.]{2,125}$", message = "Last name must be between 2 and 125 alpha characters")
+    public String getLastName() {
         return lastName;
     }
 
     @Override
-    public @NotNull @NotBlank @Size(min = 5, max = 255) @Email String getEmail() {
+    @NotNull(message = "E-mail cannot be empty")
+    @Size(min = 5, max = 255, message = "E-mail must be between {min} and {max} characters")
+    @Email(message = "Invalid E-mail provided")
+    public String getEmail() {
         return email;
     }
 
