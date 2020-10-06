@@ -7,6 +7,9 @@ spec:
   trafficPolicy:
     loadBalancer:
       simple: RANDOM
+    outlierDetection:
+      consecutiveGatewayErrors: 5
+      baseEjectionTime: 1m
 ---
 apiVersion: apps/v1
 kind: Deployment

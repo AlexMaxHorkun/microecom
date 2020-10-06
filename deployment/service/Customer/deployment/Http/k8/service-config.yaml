@@ -19,6 +19,11 @@ spec:
             host: http-customer
             port:
               number: 8080
+      timeout: 2s
+      retries:
+        attempts: 3
+        perTryTimeout: 50ms
+        retryOn: "5xx,gateway-error,connect-failure"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
