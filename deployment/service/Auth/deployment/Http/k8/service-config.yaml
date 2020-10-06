@@ -23,6 +23,16 @@ spec:
               number: 8080
               name: http
 ---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: auth-http-service-destinations
+spec:
+  host: http-auth
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,7 +62,7 @@ kind: Service
 metadata:
   name: http-auth
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 8080
       protocol: TCP

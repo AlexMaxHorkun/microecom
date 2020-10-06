@@ -20,6 +20,16 @@ spec:
             port:
               number: 8080
 ---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: customer-http-service-destinations
+spec:
+  host: http-customer
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,7 +37,7 @@ metadata:
   labels:
     app: customer-http-service
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: customer-http-service
@@ -51,7 +61,7 @@ kind: Service
 metadata:
   name: http-customer
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 8080
       protocol: TCP

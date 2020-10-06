@@ -1,3 +1,13 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: auth-grpc-service-destinations
+spec:
+  host: grpc-auth
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,7 +15,7 @@ metadata:
   labels:
     app: auth-grpc-service
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: auth-grpc-service
