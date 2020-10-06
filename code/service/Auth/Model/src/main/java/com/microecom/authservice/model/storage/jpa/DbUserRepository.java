@@ -21,31 +21,26 @@ import java.util.UUID;
  */
 @Component
 public class DbUserRepository implements UserRepository {
-    private final UserCrudRepository userRepo;
+    private final CompositeUserRepository userRepo;
 
     private final CredentialsAuthCrudRepository credentialsRepo;
 
     public DbUserRepository(
-            @Autowired UserCrudRepository userRepo,
+            @Autowired CompositeUserRepository userRepo,
             @Autowired CredentialsAuthCrudRepository credentialsRepo
     ) {
         this.userRepo = userRepo;
         this.credentialsRepo = credentialsRepo;
     }
 
-    @Transactional
     @Override
     public User create(NewUserWithCredentials user) {
         try {
-            UserRow saved = userRepo.save(new UserRow(user.getCreated().toInstant()));
-            if (credentialsRepo.findByLogin(user.getLogin()).isPresent()) {
-                throw new NotUniqueException("Login is not unique");
-            }
-            var savedAuth = new CredentialsAuthRow(saved, user.getLogin(), user.getPassword());
-            savedAuth = credentialsRepo.save(savedAuth);
-            saved.setCredentialsAuthRow(savedAuth);
+            var newUser = new UserRow(user.getCreated().toInstant());
+            var newCredentials = new CredentialsAuthRow(newUser, user.getLogin(), user.getPassword());
+            newUser.setCredentialsAuthRow(newCredentials);
 
-            return createUserReadDTO(saved);
+            return createUserReadDTO(userRepo.createLocal(newUser));
         } catch (DataIntegrityViolationException ex) {
             throw new NotUniqueException(ex);
         }
@@ -62,7 +57,6 @@ public class DbUserRepository implements UserRepository {
         return returning;
     }
 
-    @Transactional
     @Override
     public void update(UserWithCredentials user) {
         var found = userRepo.findById(UUID.fromString(user.getId()));
@@ -74,7 +68,6 @@ public class DbUserRepository implements UserRepository {
         credentialsRepo.save(credentials);
     }
 
-    @Transactional
     @Override
     public void delete(String id) throws IllegalArgumentException {
         try {

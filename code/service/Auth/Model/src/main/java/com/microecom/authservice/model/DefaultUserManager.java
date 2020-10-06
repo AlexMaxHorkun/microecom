@@ -54,7 +54,6 @@ public class DefaultUserManager implements UserManager {
         return userRepo.fetchById(id);
     }
 
-    @Transactional
     @Override
     public User update(UserWithCredentialsUpdate update) {
         var found = userRepo.fetchSensitiveById(update.getUserId());

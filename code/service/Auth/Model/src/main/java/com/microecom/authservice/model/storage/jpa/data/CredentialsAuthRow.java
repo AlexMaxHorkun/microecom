@@ -45,4 +45,8 @@ public class CredentialsAuthRow {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public void setUser(UserRow user) {
+        this.user = user;
+    }
 }
