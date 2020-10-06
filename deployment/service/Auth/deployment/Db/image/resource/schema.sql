@@ -6,7 +6,8 @@ create table if not exists users (
 );
 
 create table if not exists credentials_auth (
-    login varchar(255) not null primary key,
+    id uuid not null primary key,
+    login varchar(255) not null unique,
     passwd text not null,
     user_id uuid not null unique,
     foreign key (user_id) references users(id) on delete cascade on update cascade

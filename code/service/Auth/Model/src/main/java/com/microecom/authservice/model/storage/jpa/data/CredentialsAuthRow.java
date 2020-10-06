@@ -1,6 +1,7 @@
 package com.microecom.authservice.model.storage.jpa.data;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 /**
  * Authentication data for users that can log-in with login and password.
@@ -8,11 +9,13 @@ import javax.persistence.*;
 @Entity
 @Table(name="credentials_auth")
 public class CredentialsAuthRow {
+    @Id
+    private UUID id;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private UserRow user;
 
-    @Id
     private String login;
 
     @Column(name = "passwd")
@@ -21,6 +24,7 @@ public class CredentialsAuthRow {
     protected CredentialsAuthRow () {}
 
     public CredentialsAuthRow(UserRow user, String login, String password) {
+        this.id = UUID.randomUUID();
         this.user = user;
         this.login = login;
         this.password = password;
