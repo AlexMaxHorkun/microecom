@@ -9,6 +9,7 @@ import com.microecom.customerservice.model.storage.customer.CustomerCrudReposito
 import com.microecom.customerservice.model.storage.customer.data.CustomerRow;
 import com.microecom.customerservice.model.storage.customer.data.Existing;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
@@ -46,16 +47,20 @@ public class JpaCustomerRepository implements CustomerRepository {
 
     @Override
     public ExistingCustomer save(Customer customer) {
-        var saved = repo.save(
-                new CustomerRow(
-                        customer.getUserId(),
-                        customer.getEmail(),
-                        customer.getFirstName(),
-                        customer.getLastName()
-                )
-        );
+        try {
+            var saved = repo.save(
+                    new CustomerRow(
+                            customer.getUserId(),
+                            customer.getEmail(),
+                            customer.getFirstName(),
+                            customer.getLastName()
+                    )
+            );
 
-        return convertToExisting(saved);
+            return convertToExisting(saved);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidCustomerDataException("Invalid customer data provided");
+        }
     }
 
     @Override
