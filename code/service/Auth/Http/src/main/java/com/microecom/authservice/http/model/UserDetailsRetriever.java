@@ -2,6 +2,8 @@ package com.microecom.authservice.http.model;
 
 import com.microecom.authservice.http.data.StoredUserDetails;
 import com.microecom.authservice.model.UserManager;
+import com.microecom.util.faultinjection.aop.annotation.InjectDelay;
+import com.microecom.util.faultinjection.aop.annotation.InjectExceptionBefore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +19,8 @@ public class UserDetailsRetriever implements UserDetailsService {
     }
 
     @Override
+    @InjectExceptionBefore
+    @InjectDelay
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         var found = userManager.findByLogin(s);
         if (found.isEmpty()) {

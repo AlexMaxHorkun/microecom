@@ -6,6 +6,9 @@ import com.microecom.customerservice.http.controller.data.PatchAddressUpdate;
 import com.microecom.customerservice.http.model.PrincipalManager;
 import com.microecom.customerservice.model.AddressManager;
 import com.microecom.customerservice.model.data.ExistingAddress;
+import com.microecom.util.faultinjection.aop.annotation.InjectDelay;
+import com.microecom.util.faultinjection.aop.annotation.InjectExceptionAfter;
+import com.microecom.util.faultinjection.aop.annotation.InjectExceptionBefore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,8 @@ public class Addresses {
     }
 
     @PostMapping
+    @InjectExceptionAfter
+    @InjectDelay
     public ResponseEntity<AddressRead> create(@RequestBody @Valid NewAddress address, Principal principal) {
         var customerFound = principals.extractCustomer(principal);
         address.setCustomerId(customerFound.get().getId());
@@ -38,6 +43,8 @@ public class Addresses {
     }
 
     @PatchMapping(path = "/{id}")
+    @InjectExceptionAfter
+    @InjectDelay
     public ResponseEntity<AddressRead> update(
             @RequestBody @Valid PatchAddressUpdate update,
             @PathVariable @NotNull String id,
@@ -54,6 +61,8 @@ public class Addresses {
     }
 
     @DeleteMapping(path = "/{id}")
+    @InjectExceptionAfter
+    @InjectDelay
     public ResponseEntity<Object> delete(@PathVariable @NotNull String id, Principal principal) {
         var addressFound = addresses.findById(id);
         var customer = principals.extractCustomer(principal).get();
@@ -67,6 +76,8 @@ public class Addresses {
     }
 
     @GetMapping
+    @InjectExceptionBefore
+    @InjectDelay
     public ResponseEntity<List<AddressRead>> list(Principal principal) {
         var customer = principals.extractCustomer(principal).get();
         var found = addresses.findListFor(customer.getId());

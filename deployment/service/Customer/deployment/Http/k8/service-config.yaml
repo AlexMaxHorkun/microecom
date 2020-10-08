@@ -19,10 +19,11 @@ spec:
             host: http-customer
             port:
               number: 8080
-      timeout: 4s
+      timeout: 10s
       retries:
-        attempts: 3
-        retryOn: "5xx,gateway-error,connect-failure"
+        attempts: 5
+        retryOn: "5xx,gateway-error,connect-failure,reset"
+        perTryTimeout: 1s
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -33,6 +34,9 @@ spec:
   trafficPolicy:
     loadBalancer:
       simple: RANDOM
+    outlierDetection:
+      consecutiveGatewayErrors: 5
+      baseEjectionTime: 1m
 ---
 apiVersion: apps/v1
 kind: Deployment

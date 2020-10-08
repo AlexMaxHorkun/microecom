@@ -7,6 +7,9 @@ import com.microecom.authservice.grpc.server.model.data.NewLocalUser;
 import com.microecom.authservice.model.UserManager;
 import com.microecom.authservice.model.data.UserWithLogin;
 import com.microecom.authservice.model.exception.InvalidUserDataException;
+import com.microecom.util.faultinjection.aop.annotation.InjectDelay;
+import com.microecom.util.faultinjection.aop.annotation.InjectExceptionAfter;
+import com.microecom.util.faultinjection.aop.annotation.InjectExceptionBefore;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +36,8 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
     }
 
     @Override
+    @InjectExceptionAfter
+    @InjectDelay
     public void createLocal(Users.NewLocalUserArg request, StreamObserver<Users.UpdatedUserResult> responseObserver) {
         logger.info("GRPC.createLocal() requested");
         var newUser = new NewLocalUser(request.getLogin(), request.getPassword(), ZonedDateTime.now());
@@ -72,6 +77,8 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
     }
 
     @Override
+    @InjectExceptionBefore
+    @InjectDelay
     public void find(Users.IdArg request, StreamObserver<Users.FoundUserResult> responseObserver) {
         logger.info("GRPC.find() requested with " + request.getId());
         var found = userManager.findById(request.getId());
@@ -96,6 +103,8 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
     }
 
     @Override
+    @InjectExceptionAfter
+    @InjectDelay
     public void updateLocal(
             Users.LocalUserUpdateArg request,
             StreamObserver<Users.UpdatedUserResult> responseObserver
@@ -136,6 +145,8 @@ public class UserManagerImpl extends UserManagerGrpc.UserManagerImplBase {
     }
 
     @Override
+    @InjectExceptionAfter
+    @InjectDelay
     public void delete(Users.IdArg request, StreamObserver<Users.DeletedResult> responseObserver) {
         logger.info("GRPC.delete() requested for " + request.getId());
         userManager.delete(request.getId());

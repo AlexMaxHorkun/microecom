@@ -22,7 +22,11 @@ spec:
             port:
               number: 8080
               name: http
-      timeout: 500ms
+      timeout: 6s
+      retries:
+        attempts: 3
+        retryOn: "5xx,gateway-error,connect-failure,reset"
+        perTryTimeout: 600ms
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -34,7 +38,8 @@ spec:
     loadBalancer:
       simple: RANDOM
     connectionPool:
-      connectTimeout: 15s
+      tcp:
+        connectTimeout: 15s
 ---
 apiVersion: apps/v1
 kind: Deployment
