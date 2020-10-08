@@ -8,7 +8,7 @@ spec:
     loadBalancer:
       simple: RANDOM
     outlierDetection:
-      consecutiveGatewayErrors: 5
+      consecutiveGatewayErrors: 10
       baseEjectionTime: 1m
 ---
 apiVersion: apps/v1

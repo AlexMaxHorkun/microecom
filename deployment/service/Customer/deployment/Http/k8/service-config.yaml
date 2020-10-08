@@ -21,7 +21,7 @@ spec:
               number: 8080
       timeout: 10s
       retries:
-        attempts: 5
+        attempts: 8
         retryOn: "5xx,gateway-error,connect-failure,reset"
         perTryTimeout: 1s
 ---
@@ -35,7 +35,7 @@ spec:
     loadBalancer:
       simple: RANDOM
     outlierDetection:
-      consecutiveGatewayErrors: 5
+      consecutiveGatewayErrors: 10
       baseEjectionTime: 1m
 ---
 apiVersion: apps/v1
