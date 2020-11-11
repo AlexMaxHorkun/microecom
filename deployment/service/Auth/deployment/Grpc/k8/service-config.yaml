@@ -7,9 +7,6 @@ spec:
   trafficPolicy:
     loadBalancer:
       simple: RANDOM
-    outlierDetection:
-      consecutiveGatewayErrors: 100
-      baseEjectionTime: 1m
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -18,7 +15,7 @@ metadata:
   labels:
     app: auth-grpc-service
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: auth-grpc-service

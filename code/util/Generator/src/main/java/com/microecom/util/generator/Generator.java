@@ -6,11 +6,15 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Generator {
-    private static int created = 0;
+    private static AtomicInteger created = new AtomicInteger();
 
     private static Gson gson = new Gson();
 
@@ -57,41 +61,14 @@ public class Generator {
         }
     }
 
-    private static final class RequestSender implements Runnable {
-        private final int id;
-
-        private final URI url;
-
-        public RequestSender(int id, URI url) {
-            this.id = id;
-            this.url = url;
-        }
-
-        @Override
-        public void run() {
-            var requestObject = new NewCustomerRequest(
-                    String.format("test%d@test.com", id),
-                    "test",
-                    "test",
-                    String.format("test_%d", id),
-                    "password"
-            );
-            var request = HttpRequest.newBuilder()
-                    .uri(url)
-                    .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestObject)))
-                    .header("Content-Type", "application/json")
-                    .build();
-
-            var client = HttpClient.newHttpClient();
-
-            try {
-                var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 201) {
-                    created++;
-                }
-            } catch (Exception ex) {
-                //Whatevs
-            }
+    public static void processResponse(HttpResponse<String> response) {
+        if (response.statusCode() == 201) {
+            System.out.println(String.format("Created user #%d",
+                    created.addAndGet(1)
+            ))
+            ;
+        } else {
+            System.out.println(String.format("Failed to create: %s", response.body()));
         }
     }
 
@@ -104,17 +81,37 @@ public class Generator {
         var count = Integer.parseInt(args[2]);
         var start = Integer.parseInt(args[3]);
         var url = URI.create(String.format("http://%s:%s/rest/V1/customer", host, port));
+        var futures = new HashSet<CompletableFuture<HttpResponse<String>>>();
 
-        var executor = Executors.newFixedThreadPool(10);
         for (int i = 0; i < count; i++) {
-            executor.submit(new RequestSender(i + start, url));
+            var id = i + start;
+            System.out.println(String.format("Trying to created user #%d", id));
+            var requestObject = new NewCustomerRequest(
+                    String.format("test%d@test.com", id),
+                    "test",
+                    "test",
+                    String.format("test_%d", id),
+                    "12345aBc"
+            );
+            var request = HttpRequest.newBuilder()
+                    .uri(url)
+                    .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestObject)))
+                    .header("Content-Type", "application/json")
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .build();
+
+            var client = HttpClient.newHttpClient();
+
+            var future = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            future.thenAcceptAsync(Generator::processResponse);
+            futures.add(future);
         }
-        executor.shutdown();
+
         try {
-            executor.awaitTermination(10, TimeUnit.MINUTES);
-        } catch (InterruptedException ex) {
-            throw new RuntimeException("What?");
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        } catch (Throwable ex) {
+            System.out.println(ex.getMessage());
         }
-        System.out.println(String.format("Created %d number of customers", created));
+        System.out.println(String.format("Created %d number of customers", created.get()));
     }
 }
