@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AsyncCustomerProcessorImpl extends AsyncCustomerProcessorGrpc.AsyncCustomerProcessorImplBase {
@@ -20,7 +22,7 @@ public class AsyncCustomerProcessorImpl extends AsyncCustomerProcessorGrpc.Async
 
     private final Logger logger;
 
-    private final int batchSize = 500;
+    private final int batchSize = 100;
 
     public AsyncCustomerProcessorImpl(@Autowired UserRepository repo) {
         this.repo = repo;
@@ -29,8 +31,10 @@ public class AsyncCustomerProcessorImpl extends AsyncCustomerProcessorGrpc.Async
 
     @Override
     public StreamObserver<Users.CustomerData> process(final StreamObserver<Users.ProcessedCustomerData> responseObserver) {
+        var processingExecutor = Executors.newFixedThreadPool(5);
+
         return new StreamObserver<Users.CustomerData>() {
-            private Set<UserCustomerUpdate> received = new HashSet<>();
+            private final Set<UserCustomerUpdate> received = new HashSet<>();
 
             @Override
             public void onNext(Users.CustomerData customerData) {
@@ -39,43 +43,60 @@ public class AsyncCustomerProcessorImpl extends AsyncCustomerProcessorGrpc.Async
                         customerData.getLastName(), customerData.getCustomerId()
                 ));
                 if (received.size() >= batchSize) {
-                    updateUsers();
+                    invokeProcessing();
                 }
             }
 
             @Override
             public void onError(Throwable throwable) {
-                logger.error("[PerfExp] Failed to update a user with customer data");
+                logger.error(String.format("[PerfExp] Failed to update a user with customer data [error: %s]",
+                        throwable.getMessage()));
             }
 
             @Override
             public void onCompleted() {
                 if (received.size() != 0) {
-                    updateUsers();
+                    invokeProcessing();
                 }
+                logger.info("[PerfExp] Finished receiving customer info to process");
 
-                logger.info("[PerfExp] Finished processing customer info");
-                responseObserver.onCompleted();
+                try {
+                    processingExecutor.shutdown();
+                    processingExecutor.awaitTermination(10, TimeUnit.MINUTES);
+                    logger.info("[PerfExp] Completed processing customer data");
+                    responseObserver.onCompleted();
+                } catch (Throwable ex) {
+                    logger.error(String.format("[PerfExp] Failed to finish processing customer data [error: %s]", ex.getMessage()));
+                    responseObserver.onError(ex);
+                }
             }
 
-            private void sendUpdated(CustomerInfusedUser user) {
-                responseObserver.onNext(
-                        Users.ProcessedCustomerData.newBuilder()
-                                .setCustomerId(user.getCustomerId())
-                                .setCreated(user.getCreated().getEpochSecond())
-                                .setEmail(user.getCustomerEmail())
-                                .setFirstName(user.getCustomerFirstname())
-                                .setLastName(user.getCustomerLastname())
-                                .setUserId(user.getUserId())
-                                .build()
-                );
+            private synchronized void sendUpdated(Set<CustomerInfusedUser> userData) {
+                for (CustomerInfusedUser user : userData) {
+                    responseObserver.onNext(
+                            Users.ProcessedCustomerData.newBuilder()
+                                    .setCustomerId(user.getCustomerId())
+                                    .setCreated(user.getCreated().getEpochSecond())
+                                    .setEmail(user.getCustomerEmail())
+                                    .setFirstName(user.getCustomerFirstname())
+                                    .setLastName(user.getCustomerLastname())
+                                    .setUserId(user.getUserId())
+                                    .build()
+                    );
+                }
             }
 
-            private void updateUsers() {
-                var updated = repo.infuse(received);
-                logger.info(String.format("[PerfExp] Updated %d user records records", updated.size()));
+            private synchronized void invokeProcessing() {
+                var toProcess = received.toArray(new UserCustomerUpdate[0]);
                 received.clear();
-                updated.forEach(this::sendUpdated);
+                processingExecutor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        var updated = repo.infuse(toProcess);
+                        logger.info(String.format("[PerfExp] Updated %d user records records", updated.size()));
+                        sendUpdated(updated);
+                    }
+                });
             }
         };
     }

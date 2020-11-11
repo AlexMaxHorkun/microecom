@@ -1,12 +1,10 @@
 package com.microecom.customerservice.http.controller;
 
-import com.microecom.customerservice.http.controller.data.PerfRequest;
 import com.microecom.customerservice.model.client.AuthClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,9 +46,9 @@ public class PerfExperiment {
     }
 
     @PostMapping
-    public ResponseEntity<PerfResult> perfTest(@RequestBody PerfRequest request) {
+    public ResponseEntity<PerfResult> perfTest() {
         var started = LocalDateTime.now();
-        var processed = client.processCustomers(request.getThreads());
+        var processed = client.processCustomers();
 
         return new ResponseEntity<>(new PerfResult(processed, Duration.between(started, LocalDateTime.now())), HttpStatus.OK);
     }

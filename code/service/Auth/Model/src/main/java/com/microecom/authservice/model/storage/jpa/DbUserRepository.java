@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -104,10 +104,10 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public Set<CustomerInfusedUser> infuse(Set<UserCustomerUpdate> updates) {
+    public Set<CustomerInfusedUser> infuse(UserCustomerUpdate[] updates) {
         userRepo.updateCustomerDataForAll(updates);
         var updated = userRepo.findAllByIdIn(
-                updates.stream().map(UserCustomerUpdate::getUserId).collect(Collectors.toSet())
+                Arrays.stream(updates).map(UserCustomerUpdate::getUserId).collect(Collectors.toSet())
         );
 
         return updated.stream().map(DbUserRepository::convert).collect(Collectors.toSet());

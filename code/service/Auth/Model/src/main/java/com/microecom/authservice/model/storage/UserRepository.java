@@ -25,5 +25,5 @@ public interface UserRepository {
 
     Optional<UserWithCredentials> findByLogin(String login);
 
-    Set<CustomerInfusedUser> infuse(Set<UserCustomerUpdate> updates);
+    Set<CustomerInfusedUser> infuse(UserCustomerUpdate[] updates);
 }

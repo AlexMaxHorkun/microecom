@@ -16,5 +16,5 @@ public interface AuthClient {
 
     void delete(String id);
 
-    long processCustomers(int threads);
+    long processCustomers();
 }

@@ -8,5 +8,5 @@ import java.util.Set;
 public interface UserRepositoryCustom {
     public UserRow createLocal(UserRow user);
 
-    public void updateCustomerDataForAll(Set<UserCustomerUpdate> updates);
+    public void updateCustomerDataForAll(UserCustomerUpdate[] updates);
 }

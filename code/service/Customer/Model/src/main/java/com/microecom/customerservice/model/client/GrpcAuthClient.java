@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class GrpcAuthClient implements AuthClient {
@@ -37,28 +38,6 @@ public class GrpcAuthClient implements AuthClient {
     private final Logger logger;
 
     private final int[] batchSizes = {100, 1000, 5000, 10000};
-
-    private final class BatchSender implements Runnable {
-        private final StreamObserver<Users.CustomerData> requestObserver;
-
-        private final CustomerRepository repo;
-
-        private final int batchSize;
-
-        private final int pageNo;
-
-        public BatchSender(StreamObserver<Users.CustomerData> requestObserver, CustomerRepository repo, int batchSize, int pageNo) {
-            this.requestObserver = requestObserver;
-            this.repo = repo;
-            this.batchSize = batchSize;
-            this.pageNo = pageNo;
-        }
-
-        @Override
-        public void run() {
-            repo.readBatch(batchSize, pageNo).map(GrpcAuthClient::convert).forEach(requestObserver::onNext);
-        }
-    }
 
     public GrpcAuthClient(
             @Value("${customer-service.client.auth.grpc.uri}") String uri,
@@ -144,14 +123,15 @@ public class GrpcAuthClient implements AuthClient {
     }
 
     @Override
-    public long processCustomers(int threads) {
+    public long processCustomers() {
         var total = repo.count();
         if (total == 0) {
             return 0;
         }
-        final long[] processedCount = {0};
+        final var processedCount = new AtomicInteger();
         int batchSize = calculateBatchSize(total);
-        var latch = new CountDownLatch(1);
+        var postProcessorExecutor = Executors.newFixedThreadPool(5);
+        var responseLatch = new CountDownLatch(1);
         var channel = openChannel();
         var service = AsyncCustomerProcessorGrpc.newStub(channel);
         try {
@@ -171,7 +151,7 @@ public class GrpcAuthClient implements AuthClient {
                 public void onError(Throwable throwable) {
                     logger.error("[PerfExp] Failed to processed user service processed customer");
                     logger.error(throwable.getLocalizedMessage());
-                    latch.countDown();
+                    waitOnPostProcessing();
                 }
 
                 @Override
@@ -179,43 +159,66 @@ public class GrpcAuthClient implements AuthClient {
                     if (received.size() > 0) {
                         doUpdates();
                     }
-                    logger.info(String.format("[PerfExp] Processed total of %d customers", processedCount[0]));
-                    latch.countDown();
+                    logger.info("[PerfExp] Retrieved all user infused customers");
+                    waitOnPostProcessing();
                 }
 
-                private void doUpdates() {
-                    repo.updateWithUserData((UserDataUpdate[]) received.stream().toArray());
-                    processedCount[0] += received.size();
-                    logger.info(String.format("[PerfExp] Processed %d customers", received.size()));
+                private synchronized void doUpdates() {
+                    var toProcess = received.toArray(new UserDataUpdate[0]);
                     received.clear();
+                    postProcessorExecutor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            repo.updateWithUserData(toProcess);
+                            processedCount.addAndGet(toProcess.length);
+                            logger.info(String.format("[PerfExp] Processed %d customers", toProcess.length));
+                        }
+                    });
+                }
+
+                private void waitOnPostProcessing() {
+                    try {
+                        postProcessorExecutor.shutdown();
+                        postProcessorExecutor.awaitTermination(10, TimeUnit.MINUTES);
+                    } catch (Throwable ex) {
+                        logger.error("[PerfExp] Failed to post-processed user service processed customer");
+                        throw new RuntimeException("Failed to post-process", ex);
+                    } finally {
+                        responseLatch.countDown();
+                    }
                 }
             };
 
             var requestObserver = service.process(responseObserver);
 
-            var executor = Executors.newFixedThreadPool(threads);
-            var pages = (int) Math.ceil((double) total / (double) batchSize);
-            for (int page = 0; page < pages; page++) {
-                executor.submit(new BatchSender(requestObserver, repo, batchSize, page));
-            }
-            executor.shutdown();
             try {
-                executor.awaitTermination(10, TimeUnit.MINUTES);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException("Execution interrupted");
+                var pages = (int) Math.ceil((double) total / (double) batchSize);
+                for (int page = 0; page < pages; page++) {
+                    repo.readBatch(batchSize, page).map(GrpcAuthClient::convert).forEach(requestObserver::onNext);
+                }
+
+                requestObserver.onCompleted();
+                logger.info(String.format("[PerfExp] Sent all %d customers data", total));
+            } catch (Throwable ex) {
+                logger.error(String.format("[PerfExp] Failed to send customer data over [error: %s]", ex.getMessage()));
+                requestObserver.onError(ex);
             }
-            requestObserver.onCompleted();
+
+            try {
+                postProcessorExecutor.awaitTermination(10, TimeUnit.MINUTES);
+            } catch (Throwable ex) {
+                logger.error(String.format("[PerfExp] Failed to finish post processing [error: %s]", ex.getMessage()));
+            }
         } finally {
             channel.shutdown();
         }
-
         try {
-            latch.await();
-        } catch (InterruptedException ex) {
-            throw new RuntimeException("Thread failure");
+            responseLatch.await();
+        } catch (Throwable ex) {
+            logger.error("[PerfExp] Failed to wait for post processing");
         }
 
-        return processedCount[0];
+        return processedCount.get();
     }
 
     /**

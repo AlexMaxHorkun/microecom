@@ -5,6 +5,7 @@ import com.microecom.authservice.model.storage.jpa.data.UserRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Set;
 
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
@@ -35,7 +36,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
     @Transactional
     @Override
-    public void updateCustomerDataForAll(Set<UserCustomerUpdate> updates) {
-        updates.forEach(userCrudRepo::addCustomerData);
+    public void updateCustomerDataForAll(UserCustomerUpdate[] updates) {
+        Arrays.stream(updates).forEach(userCrudRepo::addCustomerData);
     }
 }
