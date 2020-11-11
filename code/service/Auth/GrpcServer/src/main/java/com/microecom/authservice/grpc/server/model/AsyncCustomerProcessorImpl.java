@@ -22,7 +22,7 @@ public class AsyncCustomerProcessorImpl extends AsyncCustomerProcessorGrpc.Async
 
     private final Logger logger;
 
-    private final int batchSize = 100;
+    private final int batchSize = 1000;
 
     public AsyncCustomerProcessorImpl(@Autowired UserRepository repo) {
         this.repo = repo;

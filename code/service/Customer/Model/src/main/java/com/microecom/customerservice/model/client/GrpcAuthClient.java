@@ -37,7 +37,7 @@ public class GrpcAuthClient implements AuthClient {
 
     private final Logger logger;
 
-    private final int[] batchSizes = {100, 1000, 5000, 10000};
+    private final int[] batchSizes = {100, 1000, 5000};
 
     public GrpcAuthClient(
             @Value("${customer-service.client.auth.grpc.uri}") String uri,
