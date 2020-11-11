@@ -1,6 +1,8 @@
 package com.microecom.authservice.model.storage.jpa;
 
 import com.microecom.authservice.model.data.*;
+import com.microecom.authservice.model.storage.data.CustomerInfusedUser;
+import com.microecom.authservice.model.storage.data.UserCustomerUpdate;
 import com.microecom.authservice.model.storage.exception.NotFoundException;
 import com.microecom.authservice.model.storage.exception.NotUniqueException;
 import com.microecom.authservice.model.storage.UserRepository;
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * User repository utilizing database.
@@ -99,6 +103,16 @@ public class DbUserRepository implements UserRepository {
         return result;
     }
 
+    @Override
+    public Set<CustomerInfusedUser> infuse(Set<UserCustomerUpdate> updates) {
+        userRepo.updateCustomerDataForAll(updates);
+        var updated = userRepo.findAllByIdIn(
+                updates.stream().map(UserCustomerUpdate::getUserId).collect(Collectors.toSet())
+        );
+
+        return updated.stream().map(DbUserRepository::convert).collect(Collectors.toSet());
+    }
+
     private User createUserReadDTO(UserRow userRow) {
         if (userRow.getCredentialsAuthRow().isPresent()) {
             return new UserWithCredentialsRead(
@@ -122,5 +136,11 @@ public class DbUserRepository implements UserRepository {
         } else {
             return new UserData(userRow.getId().toString(), userRow.getCreated());
         }
+    }
+
+    private static CustomerInfusedUser convert(UserRow row) {
+        return new CustomerInfusedUser(row.getId().toString(), row.getCustomerEmail().get(),
+                row.getCustomerFirstname().get(), row.getCustomerLastname().get(), row.getCustomerId().get(),
+                row.getCreated());
     }
 }

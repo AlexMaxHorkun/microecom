@@ -58,6 +58,23 @@ message FoundUserResult {
 
 message DeletedResult {}
 
+message CustomerData {
+  string customerId = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+  string userId = 5;
+}
+
+message ProcessedCustomerData {
+  string userId = 1;
+  int64 created = 2;
+  string email = 3;
+  string firstName = 4;
+  string lastName = 5;
+  string customerId = 6;
+}
+
 
 // Services
 service UserManager {
@@ -68,4 +85,8 @@ service UserManager {
   rpc updateLocal(LocalUserUpdateArg) returns (UpdatedUserResult);
 
   rpc delete (IdArg) returns (DeletedResult);
+}
+
+service AsyncCustomerProcessor {
+  rpc process(stream CustomerData) returns (stream ProcessedCustomerData);
 }

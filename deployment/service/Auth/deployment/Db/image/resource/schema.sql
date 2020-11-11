@@ -2,7 +2,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create table if not exists users (
     id uuid not null primary key,
-    created timestamp not null default now()
+    created timestamp not null default now(),
+    customer_email text null,
+    customer_firstname text null,
+    customer_lastname text null,
+    customer_id text null
 );
 
 create table if not exists credentials_auth (

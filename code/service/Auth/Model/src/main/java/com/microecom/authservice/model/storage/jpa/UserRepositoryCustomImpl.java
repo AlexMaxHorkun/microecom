@@ -1,8 +1,11 @@
 package com.microecom.authservice.model.storage.jpa;
 
+import com.microecom.authservice.model.storage.data.UserCustomerUpdate;
 import com.microecom.authservice.model.storage.jpa.data.UserRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private final UserCrudRepository userCrudRepo;
@@ -28,5 +31,11 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         user.setCredentialsAuthRow(credentials);
 
         return user;
+    }
+
+    @Transactional
+    @Override
+    public void updateCustomerDataForAll(Set<UserCustomerUpdate> updates) {
+        updates.forEach(userCrudRepo::addCustomerData);
     }
 }

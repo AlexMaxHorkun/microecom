@@ -6,6 +6,7 @@ import javax.persistence.Table;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -27,6 +28,8 @@ public class CustomerRow {
     private UUID defaultShippingId;
 
     private UUID defaultBillingId;
+
+    private Instant created;
 
     public CustomerRow(String userId, String email, String firstName, String lastName) {
         this.userId = userId;
@@ -89,5 +92,13 @@ public class CustomerRow {
 
     public void setDefaultBillingId(UUID defaultBillingId) {
         this.defaultBillingId = defaultBillingId;
+    }
+
+    public Optional<Instant> getCreated() {
+        return Optional.ofNullable(created);
+    }
+
+    public void setCreated(Instant created) {
+        this.created = created;
     }
 }

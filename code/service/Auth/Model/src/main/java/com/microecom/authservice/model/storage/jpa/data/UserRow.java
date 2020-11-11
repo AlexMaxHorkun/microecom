@@ -20,6 +20,14 @@ public class UserRow {
     @OneToOne(mappedBy = "user")
     private CredentialsAuthRow credentialsAuthRow;
 
+    private String customerEmail;
+
+    private String customerFirstname;
+
+    private String customerLastname;
+
+    private String customerId;
+
     protected UserRow () {}
 
     public UserRow(Instant timestamp) {
@@ -41,5 +49,37 @@ public class UserRow {
 
     public void setCredentialsAuthRow(CredentialsAuthRow credentialsAuthRow) {
         this.credentialsAuthRow = credentialsAuthRow;
+    }
+
+    public Optional<String> getCustomerEmail() {
+        return Optional.ofNullable(customerEmail);
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public Optional<String> getCustomerFirstname() {
+        return Optional.ofNullable(customerFirstname);
+    }
+
+    public void setCustomerFirstname(String customerFirstname) {
+        this.customerFirstname = customerFirstname;
+    }
+
+    public Optional<String> getCustomerLastname() {
+        return Optional.ofNullable(customerLastname);
+    }
+
+    public void setCustomerLastname(String customerLastname) {
+        this.customerLastname = customerLastname;
+    }
+
+    public Optional<String> getCustomerId() {
+        return Optional.ofNullable(customerId);
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }

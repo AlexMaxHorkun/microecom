@@ -6,7 +6,8 @@ create table customers (
     last_name text not null,
     since timestamp not null default now(),
     default_billing_id uuid,
-    default_shipping_id uuid
+    default_shipping_id uuid,
+    created timestamp null
 );
 
 create table addresses (

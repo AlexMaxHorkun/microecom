@@ -8,12 +8,20 @@ import com.microecom.customerservice.model.exception.NotFoundException;
 import com.microecom.customerservice.model.storage.customer.CustomerCrudRepository;
 import com.microecom.customerservice.model.storage.customer.data.CustomerRow;
 import com.microecom.customerservice.model.storage.customer.data.Existing;
+import com.microecom.customerservice.model.storage.data.CustomerToProcess;
+import com.microecom.customerservice.model.storage.data.UserDataUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Component
 public class JpaCustomerRepository implements CustomerRepository {
@@ -106,5 +114,30 @@ public class JpaCustomerRepository implements CustomerRepository {
         } catch (EmptyResultDataAccessException exception) {
             throw new NotFoundException("Customer not found", id);
         }
+    }
+
+    @Override
+    public long count() {
+        return repo.count();
+    }
+
+    @Override
+    public Stream<CustomerToProcess> readBatch(int size, int no) {
+        return repo.findInBatches(PageRequest.of(no, size)).get().map(JpaCustomerRepository::convert);
+    }
+
+    @Transactional
+    @Override
+    public void updateWithUserData(UserDataUpdate[] updates) {
+        for (UserDataUpdate update : updates) {
+            if (repo.updateCreated(update) == 0) {
+                throw new RuntimeException("Failed to update a customer");
+            }
+        }
+    }
+
+    private static final CustomerToProcess convert(CustomerRow row) {
+        return new CustomerToProcess(row.getId().toString(), row.getEmail(),
+                row.getFirstName(), row.getLastName(), row.getUserId());
     }
 }
