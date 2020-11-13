@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -67,18 +68,15 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 .tokenStore(tokenStore());
     }
 
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        super.configure(security);
+        security.checkTokenAccess("isAnonymous()");
+    }
+
     @Bean
     public AccessTokenConverter accessTokenConverter() {
         return new JwtCustomizableTokenConverter(getKeyPair(), Collections.singletonMap("kid", "auth-service-kid"));
-    }
-
-    private KeyPair getKeyPair() {
-        if (keyPair == null) {
-            keyPair = (new KeyStoreKeyFactory(new ClassPathResource("auth_pair.jks"), "auth12345aBc".toCharArray()))
-                    .getKeyPair("microecom-auth-keypair");
-        }
-
-        return keyPair;
     }
 
     @Bean
@@ -93,5 +91,14 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 .algorithm(JWSAlgorithm.RS256)
                 .keyID("auth-service-kid");
         return new JWKSet(builder.build());
+    }
+
+    private KeyPair getKeyPair() {
+        if (keyPair == null) {
+            keyPair = (new KeyStoreKeyFactory(new ClassPathResource("auth_pair.jks"), "auth12345aBc".toCharArray()))
+                    .getKeyPair("microecom-auth-keypair");
+        }
+
+        return keyPair;
     }
 }
